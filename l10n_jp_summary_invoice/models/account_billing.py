@@ -2,8 +2,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import models, fields, api
-from itertools import groupby
-from operator import itemgetter
 
 
 class AccountBilling(models.Model):
@@ -56,32 +54,42 @@ class AccountBilling(models.Model):
 
     def validate_billing(self):
         super().validate_billing()
+        invoice = self.billing_line_ids[0].move_id if self.billing_line_ids else None
+        # receivable_line = invoice.line_ids.filtered(lambda line: line.account_id.account_type == 'asset_receivable')
+        # receivable_account = receivable_line[0].account_id if receivable_line else None
+        tax_line = invoice.line_ids.filtered(lambda line: line.tax_line_id and line.account_id.account_type == 'liability_current')
+        tax_account = tax_line[0].account_id if tax_line else None
+        tax_adjustment_tax = self.env['account.tax'].search([('name', '=', 'Tax Adj')], limit=1)
+        if not tax_adjustment_tax:
+            tax_adjustment_tax = self.env['account.tax'].create({
+                'name': 'Tax Adjustment',
+                'amount': 100.0,
+                'type_tax_use': 'sale',
+                'price_include': True,
+            })
         for rec in self:
             if rec.tax_difference != 0:
-                invoice = self.billing_line_ids[0].move_id if self.billing_line_ids else None
-                receivable_line = invoice.line_ids.filtered(lambda line: line.account_id.account_type == 'asset_receivable')
-                receivable_account = receivable_line[0].account_id if receivable_line else None
-                tax_line = invoice.line_ids.filtered(lambda line: line.tax_line_id and line.account_id.account_type == 'liability_current')
-                tax_account = tax_line[0].account_id if tax_line else None
-                adjustment_entry_vals = {
-                    'journal_id': self.tax_entry_journal_id.id,
-                    'date': rec.date,
-                    'line_ids': [
+                invoice_vals = {
+                    'move_type': 'out_invoice',
+                    'partner_id': rec.partner_id.id,
+                    'invoice_date': rec.date,
+                    'invoice_line_ids': [
                         (0, 0, {
-                            'account_id': receivable_account.id,
-                            'debit': rec.tax_difference if rec.tax_difference > 0 else 0,
-                            'credit': -rec.tax_difference if rec.tax_difference < 0 else 0,
-                            'name': 'Tax Adjustment',
-                        }),
-                        (0, 0, {
+                            'name': 'Tax Adjustment Line',
+                            'quantity': 1,
+                            'price_unit': abs(rec.tax_difference),
                             'account_id': tax_account.id,
-                            'debit': -rec.tax_difference if rec.tax_difference < 0 else 0,
-                            'credit': rec.tax_difference if rec.tax_difference > 0 else 0,
-                            'name': 'Tax Adjustment',
-                        })
-                    ]
+                            'tax_ids': [(6, 0, [tax_adjustment_tax.id])],
+                        }),
+                    ],
                 }
-                # Create the journal entry
-                adjustment_entry = self.env['account.move'].create(adjustment_entry_vals)
-                # Optionally link the adjustment entry to the billing record
-                rec.tax_adjustment_entry_id = adjustment_entry.id
+                invoice = self.env['account.move'].create(invoice_vals)
+                invoice.action_post()
+                rec.tax_adjustment_entry_id = invoice.id
+        
+    def action_cancel(self):
+        super().action_cancel()
+        for rec in self:
+            rec.tax_adjustment_entry_id.button_draft()
+            rec.tax_adjustment_entry_id.button_cancel()
+            rec.tax_adjustment_entry_id = False
