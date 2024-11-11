@@ -1,7 +1,8 @@
 # Copyright 2024 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 
 class AccountBilling(models.Model):
@@ -26,66 +27,77 @@ class AccountBilling(models.Model):
     @api.depends('billing_line_ids.move_id')
     def _compute_amount_tax(self):
         for billing in self:
-            line_data = []
-            tax_sum = 0.0
+            tax_sum = sum(line.move_id.amount_tax for line in billing.billing_line_ids if line.move_id)
+            billing.invoice_tax_sum = tax_sum
+            grouped_lines = {}
             for line in billing.billing_line_ids:
                 invoice = line.move_id
-                if invoice:
-                    tax_sum += line.move_id.amount_tax
-                    for inv_line in invoice.invoice_line_ids:
-                        for tax in inv_line.tax_ids:
-                            line_data.append((inv_line.price_subtotal, tax))
-            billing.invoice_tax_sum = tax_sum
-            # Sort and group by tax
-            invoice_tax_total = 0.0
-            grouped_lines = {}
-            for subtotal, tax in line_data:
-                if tax not in grouped_lines:
-                    grouped_lines[tax] = 0
-                grouped_lines[tax] += subtotal
-            for tax, subtotal_sum in grouped_lines.items():
-                invoice_tax_total += tax.compute_all(subtotal_sum, billing.currency_id)['taxes'][0]['amount']
-            billing.summary_invoice_amount_tax = invoice_tax_total
+                for inv_line in invoice.invoice_line_ids:
+                    for tax in inv_line.tax_ids:
+                        if tax not in grouped_lines:
+                            grouped_lines[tax] = inv_line.price_subtotal
+                            continue
+                        grouped_lines[tax] += inv_line.price_subtotal
+            billing.summary_invoice_amount_tax = sum(
+                tax.compute_all(subtotal, billing.currency_id)['taxes'][0]['amount']
+                for tax, subtotal in grouped_lines.items()
+            )
 
     @api.depends('summary_invoice_amount_tax', 'invoice_tax_sum')
     def _compute_tax_difference(self):
         for billing in self:
-            billing.tax_difference = abs(billing.summary_invoice_amount_tax - billing.invoice_tax_sum)
+            billing.tax_difference = billing.summary_invoice_amount_tax - billing.invoice_tax_sum
 
     def validate_billing(self):
         super().validate_billing()
         invoice = self.billing_line_ids[0].move_id if self.billing_line_ids else None
-        # receivable_line = invoice.line_ids.filtered(lambda line: line.account_id.account_type == 'asset_receivable')
-        # receivable_account = receivable_line[0].account_id if receivable_line else None
+        receivable_line = invoice.line_ids.filtered(lambda line: line.account_id.account_type == 'asset_receivable')
+        receivable_account = receivable_line[0].account_id if receivable_line else None
         tax_line = invoice.line_ids.filtered(lambda line: line.tax_line_id and line.account_id.account_type == 'liability_current')
         tax_account = tax_line[0].account_id if tax_line else None
-        tax_adjustment_tax = self.env['account.tax'].search([('name', '=', 'Tax Adj')], limit=1)
+        tag_ids = self.env['account.account.tag'].search([('is_use_in_tax_adjustment', '=', True)])
+        if not tag_ids:
+            raise UserError(_("There are no tax grids for the adjustment tax."))
+        tax_adjustment_tax = self.env['account.tax'].search([('name', '=', 'Adjustment')], limit=1)
         if not tax_adjustment_tax:
             tax_adjustment_tax = self.env['account.tax'].create({
-                'name': 'Tax Adjustment',
+                'name': 'Adjustment',
                 'amount': 100.0,
                 'type_tax_use': 'sale',
                 'price_include': True,
             })
+            tax_adjustment_tax.invoice_repartition_line_ids[0].tag_ids = [(6, 0, tag_ids.ids)]
+            tax_adjustment_tax.refund_repartition_line_ids[0].tag_ids = [(6, 0, tag_ids.ids)]
         for rec in self:
             if rec.tax_difference != 0:
-                invoice_vals = {
-                    'move_type': 'out_invoice',
-                    'partner_id': rec.partner_id.id,
-                    'invoice_date': rec.date,
-                    'invoice_line_ids': [
+                adjustment_entry_vals = {
+                    'journal_id': self.tax_entry_journal_id.id,
+                    'date': rec.date,
+                    'line_ids': [
                         (0, 0, {
-                            'name': 'Tax Adjustment Line',
-                            'quantity': 1,
-                            'price_unit': abs(rec.tax_difference),
                             'account_id': tax_account.id,
-                            'tax_ids': [(6, 0, [tax_adjustment_tax.id])],
+                            'debit': 0.0,
+                            'credit': rec.tax_difference,
+                            'tax_ids': [(6, 0, tax_adjustment_tax.ids)],
+                            'name': 'Tax Adjustment',
                         }),
-                    ],
+                        (0, 0, {
+                            'account_id': receivable_account.id,
+                            'debit': rec.tax_difference,
+                            'credit': 0.0,
+                            'name': 'Tax Adjustment',
+                        })
+                    ]
                 }
-                invoice = self.env['account.move'].create(invoice_vals)
-                invoice.action_post()
-                rec.tax_adjustment_entry_id = invoice.id
+                adjustment_entry = self.env['account.move'].create(adjustment_entry_vals)
+                adjustment_entry.line_ids.filtered(
+                    lambda line: not (
+                        (line.account_id == tax_account and line.tax_ids) or
+                        (line.account_id == receivable_account)
+                    )
+                ).with_context(dynamic_unlink=True).unlink()
+                adjustment_entry.action_post()
+                rec.tax_adjustment_entry_id = adjustment_entry.id
         
     def action_cancel(self):
         super().action_cancel()
