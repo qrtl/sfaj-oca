@@ -1,5 +1,5 @@
 # Copyright 2024 Quartile
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "JP Summary Invoice",
     "version": "16.0.1.0.0",
@@ -11,6 +11,9 @@
         "account_billing",
     ],
     "data": [
+        "reports/report.xml",
+        "reports/report_summary_invoice.xml",
+        "views/account_account_tag_views.xml",
         "views/account_billing_views.xml",
     ],
     "installable": True,
