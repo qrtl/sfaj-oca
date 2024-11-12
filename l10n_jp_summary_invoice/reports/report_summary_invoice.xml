@@ -34,7 +34,7 @@
                             <th>
                                 <span>Tax</span>
                             </th>
-                            <th class="text-right">
+                            <th>
                                 <span>Total</span>
                             </th>
                         </tr>
@@ -54,6 +54,64 @@
                                 <span></span>
                             </td>
                             <td class="text-right">
+                                <span></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-sm table-bordered o_main_table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span>Date / Invoice No.</span>
+                            </th>
+                            <th>
+                                <span>Product</span>
+                            </th>
+                            <th>
+                                <span>Quantity</span>
+                            </th>
+                            <th>
+                                <span>Uom</span>
+                            </th>
+                            <th>
+                                <span>Price</span>
+                            </th>
+                            <th>
+                                <span>Tax</span>
+                            </th>
+                            <th>
+                                <span>Subtotal</span>
+                            </th>
+                            <th>
+                                <span>Sale Order No.</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>100.00</span>
+                            </td>
+                            <td>
+                                <span></span>
+                            </td>
+                            <td>
+                                <span></span>
+                            </td>
+                            <td>
+                                <span></span>
+                            </td>
+                            <td>
+                                <span></span>
+                            </td>
+                            <td>
+                                <span></span>
+                            </td>
+                            <td>
+                                <span></span>
+                            </td>
+                            <td>
                                 <span></span>
                             </td>
                         </tr>
