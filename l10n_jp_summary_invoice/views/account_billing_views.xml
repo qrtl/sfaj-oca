@@ -5,19 +5,8 @@
         <field name="inherit_id" ref="account_billing.view_account_billing_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='currency_id']" position="after" >
-                <field name="tax_entry_journal_id" />
-            </xpath>
-            <xpath expr="//notebook" position="inside">
-                <page string="Tax Adjustment Information" attrs="{'invisible': [('bill_type', '!=', 'out_invoice')]}">
-                    <group string="Summary" class="oe_mandatory">
-                        <group>
-                            <field name="summary_invoice_amount_tax" readonly="1" />
-                            <field name="invoice_tax_sum" readonly="1" />
-                            <field name="tax_difference" readonly="1" />
-                            <field name="tax_adjustment_entry_id" readonly="1"/>
-                        </group>
-                    </group>
-                </page>
+                <field name="tax_entry_journal_id" attrs="{'invisible': [('bill_type', '!=', 'out_invoice')]}"/>
+                <field name="tax_adjustment_entry_id" readonly="1" attrs="{'invisible': [('bill_type', '!=', 'out_invoice')]}"/>
             </xpath>
         </field>
     </record>
