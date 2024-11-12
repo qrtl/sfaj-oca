@@ -13,7 +13,6 @@
     "data": [
         "reports/report.xml",
         "reports/report_summary_invoice.xml",
-        "views/account_account_tag_views.xml",
         "views/account_billing_views.xml",
     ],
     "installable": True,

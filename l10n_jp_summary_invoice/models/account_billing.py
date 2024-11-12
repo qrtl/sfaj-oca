@@ -18,7 +18,7 @@ class AccountBilling(models.Model):
         tax_summary = {}
         for line in self.billing_line_ids:
             invoice = line.move_id
-            for tax_line in invoice.line_ids.filtered(lambda l: l.tax_line_id):
+            for tax_line in invoice.line_ids.filtered(lambda line: line.display_type == 'tax' or (line.display_type == 'rounding' and line.tax_repartition_line_id)):
                 tax = tax_line.tax_line_id
                 tax_summary[tax] = tax_summary.get(tax, 0) + tax_line.credit
         return tax_summary
