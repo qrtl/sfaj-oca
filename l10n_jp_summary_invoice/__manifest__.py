@@ -5,7 +5,7 @@
     "version": "16.0.1.0.0",
     "category": "l10n",
     "author": "Quartile, Odoo Community Association (OCA)",
-    "website": "https://www.quartile.co",
+    "website": "https://github.com/OCA/l10n-japan",
     "license": "AGPL-3",
     "depends": [
         "account_billing",
@@ -13,7 +13,6 @@
     "data": [
         "reports/report.xml",
         "reports/report_summary_invoice.xml",
-        "views/account_billing_views.xml",
     ],
     "installable": True,
 }
