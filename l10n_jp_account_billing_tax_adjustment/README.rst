@@ -28,12 +28,17 @@ JP Account Billing Tax Adjustment
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module creates a tax adjustment journal entry if there is a discrepancy between the sum of Odoo's standard tax amounts for each invoice at each tax rate and the recalculated tax amount based on the total subtotal of all invoice lines in the billing lines at each tax rate.
+This module creates a tax adjustment journal entry upon billing validation if there is a discrepancy between the sum of Odoo's standard tax amounts for each invoice at each tax rate and the recalculated tax amount based on the total subtotal of all invoice lines in the billing lines at each tax rate.
 
 **Table of contents**
 
 .. contents::
    :local:
+
+Configuration
+=============
+
+Select the journal that will be used for the tax adjustment journal entry.
 
 Bug Tracker
 ===========
