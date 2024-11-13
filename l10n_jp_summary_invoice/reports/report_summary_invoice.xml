@@ -1,8 +1,10 @@
 <odoo>
     <template id="report_summary_invoice_document">
         <t t-call="web.external_layout">
-            <div t-field="o.partner_id.commercial_partner_id"
-                    t-options='{"widget": "contact", "fields": ["phone"]}'/>
+            <div
+                t-field="o.partner_id.commercial_partner_id"
+                t-options='{"widget": "contact", "fields": ["phone"]}'
+            />
             <div class="page">
                 <h2>
                     <span t-if="o.state == 'billed'">Billing</span>
@@ -10,13 +12,16 @@
                     <span t-if="o.state == 'cancel'">Cancelled Billing</span>
                     <span t-field="o.name" />
                 </h2>
-                <div id="informations" class="row mt32 mb32 d-flex justify-content-between">
+                <div
+                    id="informations"
+                    class="row mt32 mb32 d-flex justify-content-between"
+                >
                     <div class="col-auto mw-100 mb-2">
                         <strong>Invoice Date:</strong>
-                        <span t-field="o.threshold_date"/>
+                        <span t-field="o.threshold_date" />
                     </div>
                     <div class="col-auto mw-100 mb-2 text-right">
-                        <span t-field="o.narration"/>
+                        <span t-field="o.narration" />
                     </div>
                 </div>
                 <table class="table table-sm table-bordered o_main_table">
@@ -45,16 +50,16 @@
                                 <span>100.00</span>
                             </td>
                             <td>
-                                <span></span>
+                                <span />
                             </td>
                             <td>
-                                <span></span>
+                                <span />
                             </td>
                             <td>
-                                <span></span>
+                                <span />
                             </td>
                             <td class="text-right">
-                                <span></span>
+                                <span />
                             </td>
                         </tr>
                     </tbody>
@@ -62,59 +67,80 @@
                 <table class="table table-sm table-bordered o_main_table">
                     <thead>
                         <tr>
-                            <th>
-                                <span>Date / Invoice No.</span>
-                            </th>
-                            <th>
-                                <span>Product</span>
-                            </th>
-                            <th>
-                                <span>Quantity</span>
-                            </th>
-                            <th>
-                                <span>Uom</span>
-                            </th>
-                            <th>
-                                <span>Price</span>
-                            </th>
-                            <th>
-                                <span>Tax</span>
-                            </th>
-                            <th>
-                                <span>Subtotal</span>
-                            </th>
-                            <th>
-                                <span>Sale Order No.</span>
-                            </th>
+                            <th>Date / Invoice No.</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Uom</th>
+                            <th>Price</th>
+                            <th>Tax</th>
+                            <th>Subtotal</th>
+                            <th>Sale Order No.</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <span>100.00</span>
-                            </td>
-                            <td>
-                                <span></span>
-                            </td>
-                            <td>
-                                <span></span>
-                            </td>
-                            <td>
-                                <span></span>
-                            </td>
-                            <td>
-                                <span></span>
-                            </td>
-                            <td>
-                                <span></span>
-                            </td>
-                            <td>
-                                <span></span>
-                            </td>
-                            <td>
-                                <span></span>
-                            </td>
-                        </tr>
+                        <t t-foreach="o.billing_line_ids" t-as="line">
+                            <t t-set='invoice' t-value='line.move_id' />
+                            <tr>
+                                <td>
+                                    <span t-field="invoice.name" />
+                                </td>
+                                <td><span
+                                        t-field="invoice.invoice_line_ids[0].product_id.display_name"
+                                    /></td>
+                                <td><span
+                                        t-field="invoice.invoice_line_ids[0].quantity"
+                                    /></td>
+                                <td><span
+                                        t-field="invoice.invoice_line_ids[0].product_uom_id.name"
+                                    /></td>
+                                <td><span
+                                        t-field="invoice.invoice_line_ids[0].price_unit"
+                                    /></td>
+                                <td><span
+                                        t-field="invoice.invoice_line_ids[0].tax_ids.name"
+                                    /></td>
+                                <td><span
+                                        t-field="invoice.invoice_line_ids[0].price_subtotal"
+                                    /></td>
+                                <td><span
+                                        t-field="invoice.invoice_line_ids[0].sale_line_ids.order_id.name"
+                                    /></td>
+                            </tr>
+                            <t t-foreach="invoice.invoice_line_ids[1:]" t-as="line">
+                                <tr>
+                                    <td />
+                                    <td><span
+                                            t-field="line.product_id.display_name"
+                                        /></td>
+                                    <td><span t-field="line.quantity" /></td>
+                                    <td><span t-field="line.product_uom_id.name" /></td>
+                                    <td><span t-field="line.price_unit" /></td>
+                                    <td><span t-field="line.tax_ids.name" /></td>
+                                    <td><span t-field="line.price_subtotal" /></td>
+                                    <td><span
+                                            t-field="line.sale_line_ids.order_id.name"
+                                        /></td>
+                                </tr>
+                            </t>
+                            <tr>
+                                <td />
+                                <td colspan="7"><i class="fa fa-square" /><span
+                                        t-field="invoice.partner_id.name"
+                                    /></td>
+                            </tr>
+                            <tr>
+                                <td />
+                                <td colspan="5">Amount Untaxed</td>
+                                <td><span t-field="invoice.amount_untaxed" /></td>
+                                <td />
+                            </tr>
+                            <tr>
+                                <td />
+                                <td colspan="5">Total</td>
+                                <td><span t-field="invoice.amount_total" /></td>
+                                <td />
+                            </tr>
+                        </t>
                     </tbody>
                 </table>
             </div>
