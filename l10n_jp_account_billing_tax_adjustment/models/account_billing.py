@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import fields, models
+from odoo.tools.float_utils import float_round
 
 
 class AccountBilling(models.Model):
@@ -58,6 +59,10 @@ class AccountBilling(models.Model):
             tax_amount = tax.compute_all(subtotal, self.currency_id)["taxes"][0][
                 "amount"
             ]
+            if self.env.company.tax_calculation_rounding_method == "round_globally":
+                tax_amount = float_round(
+                    tax_amount, precision_rounding=self.currency_id.rounding
+                )
             calculated_tax_summary[tax] = tax_amount
         return calculated_tax_summary
 
