@@ -24,7 +24,7 @@
                         <span t-field="o.narration" />
                     </div>
                 </div>
-                <table class="table table-sm table-bordered o_main_table">
+                <table class="table table-sm o_main_table" style="border: 1px solid;">
                     <thead>
                         <tr>
                             <th>
@@ -36,6 +36,7 @@
                             <th>
                                 <span>Balance</span>
                             </th>
+
                             <th>
                                 <span>Untaxed Amount</span>
                             </th>
@@ -49,31 +50,30 @@
                     </thead>
                     <tbody>
                         <tr>
+                            <td />
+                            <td />
+                            <td />
                             <td>
-                                <span>100.00</span>
+                                <span t-field="o.amount_untaxed" />
                             </td>
                             <td>
-                                <span />
+                                 <span t-field="o.taxes" />
                             </td>
                             <td>
-                                <span />
-                            </td>
-                            <td>
-                                <span />
-                            </td>
-                            <td>
-                                <span />
-                            </td>
-                            <td class="text-right">
-                                <span />
+                                 <span t-field="o.total_amount" />
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <table class="table table-sm table-bordered o_main_table">
+                <table class="table table-sm o_main_table" style="border: 1px solid;">
                     <thead>
                         <tr>
-                            <th>Date / Invoice No.</th>
+                            <th>
+                                <div
+                                    style="border-bottom: 1px solid #000; padding-bottom: 5px;"
+                                >Date</div>
+                                <div>Invoice No.</div>
+                            </th>
                             <th>Product</th>
                             <th>Quantity</th>
                             <th>Uom</th>
@@ -86,46 +86,67 @@
                     <tbody>
                         <t t-foreach="o.billing_line_ids" t-as="line">
                             <t t-set='invoice' t-value='line.move_id' />
+                            <t
+                                t-set="taxes"
+                                t-value="', '.join([(tax.description or tax.name) for tax in invoice.invoice_line_ids[0].tax_ids])"
+                            />
                             <tr>
                                 <td>
+                                    <span t-field="invoice.invoice_date" /><br />
                                     <span t-field="invoice.name" />
                                 </td>
-                                <td><span
+                                <td>
+                                    <span
                                         t-field="invoice.invoice_line_ids[0].product_id.display_name"
-                                    /></td>
-                                <td><span
+                                    />
+                                </td>
+                                <td>
+                                    <span
                                         t-field="invoice.invoice_line_ids[0].quantity"
-                                    /></td>
-                                <td><span
+                                    />
+                                </td>
+                                <td>
+                                    <span
                                         t-field="invoice.invoice_line_ids[0].product_uom_id.name"
-                                    /></td>
-                                <td><span
+                                    />
+                                </td>
+                                <td>
+                                    <span
                                         t-field="invoice.invoice_line_ids[0].price_unit"
-                                    /></td>
-                                <td><span
-                                        t-field="invoice.invoice_line_ids[0].tax_ids.name"
-                                    /></td>
-                                <td><span
+                                    />
+                                </td>
+                                <td><span t-esc="taxes" /></td>
+                                <td>
+                                    <span
                                         t-field="invoice.invoice_line_ids[0].price_subtotal"
-                                    /></td>
-                                <td><span
+                                    />
+                                </td>
+                                <td>
+                                    <span
                                         t-field="invoice.invoice_line_ids[0].sale_line_ids.order_id.name"
-                                    /></td>
+                                    />
+                                </td>
                             </tr>
                             <t t-foreach="invoice.invoice_line_ids[1:]" t-as="line">
+                                <t
+                                    t-set="taxes"
+                                    t-value="', '.join([(tax.description or tax.name) for tax in line.tax_ids])"
+                                />
                                 <tr>
                                     <td />
-                                    <td><span
-                                            t-field="line.product_id.display_name"
-                                        /></td>
+                                    <td>
+                                        <span t-field="line.product_id.display_name" />
+                                    </td>
                                     <td><span t-field="line.quantity" /></td>
                                     <td><span t-field="line.product_uom_id.name" /></td>
                                     <td><span t-field="line.price_unit" /></td>
-                                    <td><span t-field="line.tax_ids.name" /></td>
+                                    <td><span t-esc="taxes" /></td>
                                     <td><span t-field="line.price_subtotal" /></td>
-                                    <td><span
+                                    <td>
+                                        <span
                                             t-field="line.sale_line_ids.order_id.name"
-                                        /></td>
+                                        />
+                                    </td>
                                 </tr>
                             </t>
                             <tr>
