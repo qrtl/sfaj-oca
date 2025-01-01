@@ -1,5 +1,7 @@
-# Copyright 2022 Quartile Limited
+# Copyright 2022-2024 Quartile Limited
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+from contextlib import contextmanager
 
 from odoo import models
 
@@ -7,22 +9,22 @@ from odoo import models
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    # For journal entries
-    def _recompute_tax_lines(
-        self, recompute_tax_base_amount=False, tax_rep_lines_to_recompute=None
+    @contextmanager
+    def _sync_dynamic_line(
+        self,
+        existing_key_fname,
+        needed_vals_fname,
+        needed_dirty_fname,
+        line_type,
+        container,
     ):
-        self.ensure_one()
-        if self.company_id.need_tax_round_down:
+        if line_type == "tax" and self.env.company.need_tax_round_down:
             self = self.with_context(rounding_method="DOWN")
-        return super()._recompute_tax_lines(
-            recompute_tax_base_amount=recompute_tax_base_amount,
-            tax_rep_lines_to_recompute=tax_rep_lines_to_recompute,
-        )
-
-    # For invoice form and print total presentation.
-    # Extending _get_tax_totals() would also work for invoices, however not for sales
-    # orders. Therefore _compute_tax_totals_json() is extended for consistency reason.
-    def _compute_tax_totals_json(self):
-        if self.env.company.need_tax_round_down:
-            self = self.with_context(rounding_method="DOWN")
-        return super()._compute_tax_totals_json()
+        with super()._sync_dynamic_line(
+            existing_key_fname,
+            needed_vals_fname,
+            needed_dirty_fname,
+            line_type,
+            container,
+        ) as ret:
+            yield ret

@@ -16,51 +16,68 @@ Account Tax Round Down
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Fmi7--custom-lightgray.png?logo=github
-    :target: https://github.com/qrtl/mi7-custom/tree/15.0/account_tax_round_down
-    :alt: qrtl/mi7-custom
+.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Faccount--financial--tools-lightgray.png?logo=github
+    :target: https://github.com/OCA/account-financial-tools/tree/16.0/account_tax_round_down
+    :alt: OCA/account-financial-tools
+.. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
+    :target: https://translation.odoo-community.org/projects/account-financial-tools-16-0/account-financial-tools-16-0-account_tax_round_down
+    :alt: Translate me on Weblate
+.. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/account-financial-tools&target_branch=16.0
+    :alt: Try me on Runboat
 
-|badge1| |badge2| |badge3|
+|badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module does the following:
-
--  Provides the function of rounding down the tax amount in the invoice,
-   covering:
-
-   -  the total presentation in invoice form/print
-   -  the tax amount calculation of account move line
-
-Note that, due to the structure of compute_all() method, the round-down
-does not work perfectly in case the document involves multiple taxes
-with different price_include settings (which is not expected to happen
-under normal circumstances in the Japanese business environment).
-
-Background:
------------
-
-In Japan there is sometimes a tacit industry-wide convention of rounding
-down the tax amount instead of applying the default rounding
-("HALF-UP").
+This module provides the function of rounding down the tax amount in
+invoices (and also other business documents such as sales orders and
+purchase orders).
 
 **Table of contents**
 
 .. contents::
    :local:
 
+Use Cases / Context
+===================
+
+By default, Odoo uses the "HALF-UP" method to round tax amounts.
+However, in some regions, such as Japan, some industries have a common
+practice of rounding down instead. This module accommodates such local
+conventions by offering an alternate rounding method.
+
 Configuration
 =============
 
-Go to Accounting (or Invoicing) > Configuration > Settings, and select
-"Round-down Tax Amounts" for companies where tax amounts should be
-rownded down (selection is done by default).
+Go to *Accounting (or Invoicing) > Configuration > Settings*, and select
+"Round-down Tax Amounts" for companies whose tax amounts should be
+rounded down.
+
+Usage
+=====
+
+With the round-down setting enabled, if you create an invoice in JPY
+with the following line:
+
+-  Quantity: 1
+-  Unit Price: 15
+-  Tax: 10% (excluded)
+
+the calculated tax amount will be 1 instead of 2.
+
+Known issues / Roadmap
+======================
+
+Due to the structure of the compute_all() method in the tax model,
+rounding down may not yield the expected results in cases where
+tax-inclusive pricing is used.
 
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/qrtl/mi7-custom/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/OCA/account-financial-tools/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/qrtl/mi7-custom/issues/new?body=module:%20account_tax_round_down%0Aversion:%2015.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/account-financial-tools/issues/new?body=module:%20account_tax_round_down%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -70,11 +87,28 @@ Credits
 Authors
 -------
 
-* Quartile Limited
+* Quartile
+
+Contributors
+------------
+
+-  Quartile <https://www.quartile.co>
+
+   -  Yoshi Tashiro
 
 Maintainers
 -----------
 
-This module is part of the `qrtl/mi7-custom <https://github.com/qrtl/mi7-custom/tree/15.0/account_tax_round_down>`_ project on GitHub.
+This module is maintained by the OCA.
 
-You are welcome to contribute.
+.. image:: https://odoo-community.org/logo.png
+   :alt: Odoo Community Association
+   :target: https://odoo-community.org
+
+OCA, or the Odoo Community Association, is a nonprofit organization whose
+mission is to support the collaborative development of Odoo features and
+promote its widespread use.
+
+This module is part of the `OCA/account-financial-tools <https://github.com/OCA/account-financial-tools/tree/16.0/account_tax_round_down>`_ project on GitHub.
+
+You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
