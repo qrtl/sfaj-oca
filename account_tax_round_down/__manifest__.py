@@ -1,12 +1,12 @@
-# Copyright 2022 Quartile Limited
+# Copyright 2022-2024 Quartile
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "Account Tax Round Down",
-    "version": "15.0.1.0.0",
+    "version": "16.0.1.0.0",
     "category": "Tools",
     "license": "AGPL-3",
-    "author": "Quartile Limited",
-    "website": "https://www.quartile.co",
+    "website": "https://github.com/OCA/account-financial-tools",
+    "author": "Quartile, Odoo Community Association (OCA)",
     "depends": ["account"],
     "data": [
         "views/res_config_settings_views.xml",
