@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_account_billing_form_inherit" model="ir.ui.view">
+        <field name="name">account.billing.form.inherit</field>
+        <field name="model">account.billing</field>
+        <field name="inherit_id" ref="account_billing.view_account_billing_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field
+                    name="tax_entry_journal_id"
+                    attrs="{'invisible': [('bill_type', '!=', 'out_invoice')]}"
+                />
+                <field
+                    name="tax_adjustment_entry_id"
+                    readonly="1"
+                    attrs="{'invisible': [('bill_type', '!=', 'out_invoice')]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
