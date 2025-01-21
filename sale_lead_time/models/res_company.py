@@ -7,5 +7,7 @@ from odoo import fields, models
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    weight_address_src = fields.Float(default=1)
-    weight_address_dest = fields.Float(default=1)
+    factor_warehouse = fields.Float(default=1.0)
+    factor_country = fields.Float(default=1.0)
+    factor_state = fields.Float(default=1.0)
+    factor_partner = fields.Float(default=1.0)

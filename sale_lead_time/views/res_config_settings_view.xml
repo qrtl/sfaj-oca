@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="res_config_settings_view_form" model="ir.ui.view">
-        <field
-            name="name"
-        >res_config_settings_view_form - sale_lead_time_profile</field>
+        <field name="name">res_config_settings_view_form - sale_lead_time</field>
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="stock.res_config_settings_view_form" />
         <field name="arch" type="xml">
@@ -15,7 +13,7 @@
                         <div class="o_setting_right_pane">
                             <span
                                 class="o_form_label"
-                            >Weghts of Lead Time Profile Elements</span>
+                            >Factors of Lead Time Profile Elements</span>
                             <span
                                 class="fa fa-lg fa-building-o"
                                 title="Values set here are company-specific."
@@ -24,24 +22,40 @@
                                 groups="base.group_multi_company"
                             />
                             <div class="text-muted">
-                                Weights considered in identifying the best matching profile.
+                                Factors considered in calculating the score of profiles to identify the best matching one.
                             </div>
                             <div class="content-group">
                                 <div class="row mt16">
                                     <label
-                                        string="Source Address"
-                                        for="weight_address_src"
-                                        class="col-lg-3 o_light_label"
+                                        string="Country"
+                                        for="factor_country"
+                                        class="col-lg-6 o_light_label"
                                     />
-                                    <field name="weight_address_src" />
+                                    <field name="factor_country" />
                                 </div>
                                 <div class="row">
                                     <label
-                                        string="Destination Address"
-                                        for="weight_address_dest"
-                                        class="col-lg-3 o_light_label"
+                                        string="State"
+                                        for="factor_state"
+                                        class="col-lg-6 o_light_label"
                                     />
-                                    <field name="weight_address_dest" />
+                                    <field name="factor_state" />
+                                </div>
+                                <div class="row">
+                                    <label
+                                        string="Partner"
+                                        for="factor_partner"
+                                        class="col-lg-6 o_light_label"
+                                    />
+                                    <field name="factor_partner" />
+                                </div>
+                                <div class="row">
+                                    <label
+                                        string="Warehouse"
+                                        for="factor_warehouse"
+                                        class="col-lg-6 o_light_label"
+                                    />
+                                    <field name="factor_warehouse" />
                                 </div>
                                 <div class="mt8">
                                     <button

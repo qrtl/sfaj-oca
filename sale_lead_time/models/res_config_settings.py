@@ -7,14 +7,12 @@ from odoo import fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
-    weight_address_src = fields.Float(
-        related="company_id.weight_address_src",
-        readonly=False,
+    factor_warehouse = fields.Float(
+        related="company_id.factor_warehouse", readonly=False
     )
-    weight_address_dest = fields.Float(
-        related="company_id.weight_address_dest",
-        readonly=False,
-    )
+    factor_country = fields.Float(related="company_id.factor_country", readonly=False)
+    factor_state = fields.Float(related="company_id.factor_state", readonly=False)
+    factor_partner = fields.Float(related="company_id.factor_partner", readonly=False)
 
     def open_lead_time_profile_list(self):
         self.ensure_one()

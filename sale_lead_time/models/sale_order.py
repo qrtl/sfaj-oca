@@ -15,15 +15,7 @@ class SaleOrder(models.Model):
         help="Number of days expected for delivery from the warehouse to the delivery address.",
     )
 
-    def _get_address_src_domain(self):
-        self.ensure_one()
-        return [
-            "|",
-            ("warehouse_id", "=", self.warehouse_id.id),
-            ("warehouse_id", "=", False),
-        ]
-
-    def _get_address_dest_domain(self):
+    def _get_partner_address_domain(self):
         self.ensure_one()
         partner = self.partner_shipping_id
         partner_domain = [("partner_id", "=", partner.id)]
@@ -45,28 +37,47 @@ class SaleOrder(models.Model):
             [partner_domain, state_domain, country_domain, no_address_domain]
         )
 
-    @api.depends("warehouse_id", "partner_shipping_id")
+    def _get_warehouse_domain(self):
+        self.ensure_one()
+        return [
+            "|",
+            ("warehouse_id", "=", self.warehouse_id.id),
+            ("warehouse_id", "=", False),
+        ]
+
+    @api.depends("partner_shipping_id", "warehouse_id")
     def _compute_delivery_lead_time(self):
         for rec in self:
             rec.delivery_lead_time = 0.0
             if not rec.partner_shipping_id:
                 continue
-            address_src_domain = rec._get_address_src_domain()
-            address_dest_domain = rec._get_address_dest_domain()
-            domain = expression.AND([address_src_domain, address_dest_domain])
+            partner_address_domain = rec._get_partner_address_domain()
+            warehouse_domain = rec._get_warehouse_domain()
+            domain = expression.AND(
+                [
+                    partner_address_domain,
+                    warehouse_domain,
+                    [("company_id", "=", rec.company_id.id)],
+                ]
+            )
             profiles = self.env["lead.time.profile"].search(domain)
             if not profiles:
                 continue
             profile_scores = {
                 profile: profile._get_score(
                     **{
-                        "warehouse": rec.warehouse_id,
                         "partner": rec.partner_shipping_id,
+                        "warehouse": rec.warehouse_id,
                     }
                 )
                 for profile in profiles
             }
-            best_profile = max(profile_scores, key=profile_scores.get, default=None)
+            # In case of a tie, pick the profile with the lowest lead time.
+            best_profile = max(
+                profiles,
+                key=lambda profile: (profile_scores[profile], -profile.lead_time),
+                default=None,
+            )
             rec.delivery_lead_time = (
-                best_profile.lead_time if profile_scores[best_profile] > 0 else 0.00
+                best_profile.lead_time if profile_scores[best_profile] >= 0.0 else 0.0
             )

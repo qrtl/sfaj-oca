@@ -5,10 +5,10 @@
         <field name="model">lead.time.profile</field>
         <field name="arch" type="xml">
             <search>
-                <field name="warehouse_id" string="Warehouse" />
                 <field name="country_id" string="Country" />
                 <field name="state_id" string="State" />
                 <field name="partner_id" string="Partner" />
+                <field name="warehouse_id" string="Warehouse" />
                 <field name="lead_time" string="Lead Time" />
                 <group expand="0" string="Group By">
                     <filter
@@ -25,12 +25,16 @@
         <field name="model">lead.time.profile</field>
         <field name="arch" type="xml">
             <tree editable="top">
-                <field name="warehouse_id" optional="show" />
                 <field name="country_id" optional="show" />
                 <field name="state_id" optional="show" />
                 <field name="partner_id" optional="show" />
-                <field name="company_id" groups="base.group_multi_company" />
-                <field name="lead_time" optional="show" />
+                <field name="warehouse_id" optional="show" />
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="show"
+                />
+                <field name="lead_time" />
             </tree>
         </field>
     </record>

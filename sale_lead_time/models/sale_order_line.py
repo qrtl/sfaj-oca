@@ -19,7 +19,5 @@ class SaleOrderLine(models.Model):
     def _prepare_procurement_values(self, group_id=False):
         values = super()._prepare_procurement_values(group_id)
         if values.get("date_planned"):
-            values["date_planned"] = values["date_planned"] - timedelta(
-                days=self.order_id.delivery_lead_time
-            )
+            values["date_planned"] -= timedelta(days=self.order_id.delivery_lead_time)
         return values
