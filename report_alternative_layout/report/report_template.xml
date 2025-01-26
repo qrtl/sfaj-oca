@@ -14,24 +14,32 @@
             >not env.context.get('apply_alternative_layout')</attribute>
         </xpath>
         <xpath expr="//t[@t-call='web.address_layout']" position="after">
-            <div t-else="" class="row" name="address_layout">
-                <div class="col-7" name="partner_address">
-                    <t
-                        t-set="partner_name"
-                        t-value="o.env['ir.actions.report']._get_partner(xmlid, o.partner_id)"
-                    />
-                    <div
-                        t-esc="partner_name"
-                        t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
-                    />
+            <t t-else="">
+                <div class="row" name="address_layout">
+                    <div class="col-7" name="partner_address">
+                        <t
+                            t-set="partner_name"
+                            t-value="o.env['ir.actions.report']._get_partner(xmlid, o.partner_id)"
+                        />
+                        <div
+                            t-esc="partner_name"
+                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                        />
+                    </div>
+                    <div class="col-5" name="company_address">
+                        <div
+                            t-field="o.company_id.partner_id"
+                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                        />
+                    </div>
                 </div>
-                <div class="col-5" name="company_address">
-                    <div
-                        t-field="o.company_id.partner_id"
-                        t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
-                    />
-                </div>
-            </div>
+                <t t-if="information_block">
+                    <t t-set="colclass" t-value="'col-5 offset-1'" />
+                    <div name="information_block" class="col-6">
+                        <t t-out="information_block" />
+                    </div>
+                </t>
+            </t>
         </xpath>
     </template>
 </odoo>
