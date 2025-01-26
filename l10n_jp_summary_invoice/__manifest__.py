@@ -1,4 +1,4 @@
-# Copyright 2024 Quartile
+# Copyright 2024 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "JP Summary Invoice",
@@ -7,12 +7,11 @@
     "author": "Quartile, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-japan",
     "license": "AGPL-3",
-    "depends": [
-        "account_billing",
-    ],
+    "depends": ["account_billing"],
     "data": [
         "reports/report.xml",
         "reports/report_summary_invoice.xml",
+        "views/account_billing_views.xml",
     ],
     "installable": True,
 }
