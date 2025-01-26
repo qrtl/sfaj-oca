@@ -27,10 +27,17 @@
                         />
                     </div>
                     <div class="col-5" name="company_address">
-                        <div
-                            t-field="o.company_id.partner_id"
-                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
-                        />
+                        <ul class="list-unstyled">
+                            <li t-if="company.is_company_details_empty"><t
+                                    t-esc="company.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                                /></li>
+                            <li t-else=""><t t-esc="company.company_details" /></li>
+                            <li t-if="forced_vat">
+                                <t t-esc="company.country_id.vat_label or 'Tax ID'" />:
+                                <span t-esc="forced_vat" />
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <t t-if="information_block">
