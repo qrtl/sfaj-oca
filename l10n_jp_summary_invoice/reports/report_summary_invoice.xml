@@ -16,6 +16,16 @@
                     id="informations"
                     class="row mt32 mb32 d-flex justify-content-between"
                 >
+                    <div class="col-6">
+                        <h3>
+                            <tr class="border-black o_total">
+                                <td><strong>Total</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.total_amount"/>
+                                </td>
+                            </tr>
+                        </h3>
+                    </div>
                     <div class="col-auto mw-100 mb-2">
                         <strong>Invoice Date:</strong>
                         <span t-field="o.threshold_date" />
@@ -28,58 +38,17 @@
                     <thead>
                         <tr>
                             <th>
-                                <span>Amount of Last Billing</span>
-                            </th>
-                            <th>
-                                <span>Receive Amount</span>
-                            </th>
-                            <th>
-                                <span>Balance</span>
-                            </th>
-
-                            <th>
-                                <span>Untaxed Amount</span>
-                            </th>
-                            <th>
-                                <span>Tax</span>
-                            </th>
-                            <th>
-                                <span>Total</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td />
-                            <td />
-                            <td />
-                            <td>
-                                <span t-field="o.amount_untaxed" />
-                            </td>
-                            <td>
-                                 <span t-field="o.taxes" />
-                            </td>
-                            <td>
-                                 <span t-field="o.total_amount" />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="table table-sm o_main_table" style="border: 1px solid;">
-                    <thead>
-                        <tr>
-                            <th>
                                 <div
                                     style="border-bottom: 1px solid #000; padding-bottom: 5px;"
                                 >Date</div>
                                 <div>Invoice No.</div>
                             </th>
                             <th>Product</th>
-                            <th>Quantity</th>
+                            <th class="text-end">Quantity</th>
                             <th>Uom</th>
-                            <th>Price</th>
+                            <th class="text-end">Price</th>
                             <th>Tax</th>
-                            <th>Subtotal</th>
+                            <th class="text-end">Subtotal</th>
                             <th>Sale Order No.</th>
                         </tr>
                     </thead>
@@ -100,7 +69,7 @@
                                         t-field="invoice.invoice_line_ids[0].product_id.display_name"
                                     />
                                 </td>
-                                <td>
+                                <td class="text-end">
                                     <span
                                         t-field="invoice.invoice_line_ids[0].quantity"
                                     />
@@ -110,13 +79,13 @@
                                         t-field="invoice.invoice_line_ids[0].product_uom_id.name"
                                     />
                                 </td>
-                                <td>
+                                <td class="text-end">
                                     <span
                                         t-field="invoice.invoice_line_ids[0].price_unit"
                                     />
                                 </td>
                                 <td><span t-esc="taxes" /></td>
-                                <td>
+                                <td class="text-end">
                                     <span
                                         t-field="invoice.invoice_line_ids[0].price_subtotal"
                                     />
@@ -161,15 +130,19 @@
                                 <td><span t-field="invoice.amount_untaxed" /></td>
                                 <td />
                             </tr>
-                            <tr>
-                                <td />
-                                <td colspan="5">Total</td>
-                                <td><span t-field="invoice.amount_total" /></td>
-                                <td />
-                            </tr>
                         </t>
                     </tbody>
                 </table>
+                <div class="clearfix mb-4">
+                    <div id="total" class="row">
+                        <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ms-auto">
+                            <table class="table table-sm table-borderless" style="page-break-inside: avoid;">
+                                <t t-set="tax_totals" t-value="o.tax_totals"/>
+                                <t t-call="account.document_tax_totals"/>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </t>
     </template>
