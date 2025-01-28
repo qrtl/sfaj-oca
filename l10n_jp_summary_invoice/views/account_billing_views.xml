@@ -4,6 +4,12 @@
         <field name="model">account.billing</field>
         <field name="inherit_id" ref="account_billing.view_account_billing_form" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='date']" position="after">
+                <field
+                    name="date_due"
+                    attrs="{'invisible': [('bill_type', '!=', 'out_invoice')]}"
+                />
+            </xpath>
             <xpath expr="//field[@name='currency_id']" position="after">
                 <field
                     name="tax_entry_journal_id"
