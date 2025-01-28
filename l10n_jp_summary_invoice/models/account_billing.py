@@ -11,9 +11,18 @@ class AccountBilling(models.Model):
     amount_untaxed = fields.Monetary(compute="_compute_amount", store=True)
     total_amount = fields.Monetary(compute="_compute_amount", store=True)
     taxes = fields.Char(string="Tax", compute="_compute_amount", store=True)
+
+    date_due = fields.Date(
+        compute="_compute_billing_date_due",
+        store=True,
+        readonly=False,
+        states={"draft": [("readonly", False)]},
+        index=True,
+        copy=False,
+    )
     tax_totals = fields.Binary(
         string="Billing Totals",
-        compute='_compute_tax_totals',
+        compute="_compute_tax_totals",
         exportable=False,
     )
     tax_adjustment_entry_id = fields.Many2one("account.move")
@@ -21,6 +30,13 @@ class AccountBilling(models.Model):
         "account.journal",
         help="This journal will be used for tax adjustment journal entry.",
     )
+
+    @api.depends("billing_line_ids")
+    def _compute_billing_date_due(self):
+        for billing in self:
+            billing.date_due = max(
+                move.invoice_date_due for move in self.billing_line_ids.move_id
+            )
 
     @api.depends("billing_line_ids.move_id")
     def _compute_amount(self):
@@ -40,29 +56,35 @@ class AccountBilling(models.Model):
             billing.total_amount = total_amount
             billing.taxes = ", ".join(sorted(taxes_set))
 
-    @api.depends_context('lang')
+    @api.depends_context("lang")
     @api.depends(
         "billing_line_ids",
-        'partner_id',
-        'currency_id',
+        "partner_id",
+        "currency_id",
     )
     def _compute_tax_totals(self):
-        """ Computed field used for custom widget's rendering.
-            Only set on invoices.
+        """Computed field used for custom widget's rendering.
+        Only set on invoices.
         """
         for bill in self:
             invoice_lines = bill.billing_line_ids.move_id.invoice_line_ids
-            base_lines = invoice_lines.filtered(lambda line: line.display_type == 'product')
-            base_line_values_list = [line._convert_to_tax_base_line_dict() for line in base_lines]
-            kwargs = {
-                'base_lines': base_line_values_list,
-                'currency': bill.currency_id or bill.company_id.currency_id,
-            }
-            kwargs['tax_lines'] = [
-                line._convert_to_tax_line_dict()
-                for line in invoice_lines.filtered(lambda line: line.display_type == 'tax')
+            base_lines = invoice_lines.filtered(
+                lambda line: line.display_type == "product"
+            )
+            base_line_values_list = [
+                line._convert_to_tax_base_line_dict() for line in base_lines
             ]
-            bill.tax_totals = self.env['account.tax']._prepare_tax_totals(**kwargs)
+            kwargs = {
+                "base_lines": base_line_values_list,
+                "currency": bill.currency_id or bill.company_id.currency_id,
+            }
+            kwargs["tax_lines"] = [
+                line._convert_to_tax_line_dict()
+                for line in invoice_lines.filtered(
+                    lambda line: line.display_type == "tax"
+                )
+            ]
+            bill.tax_totals = self.env["account.tax"]._prepare_tax_totals(**kwargs)
 
     def _get_tax_summary_from_invoices(self):
         """Get the actual tax amounts per tax based on the invoice lines
