@@ -15,37 +15,55 @@
         </xpath>
         <xpath expr="//t[@t-call='web.address_layout']" position="after">
             <t t-else="">
+                <t
+                    t-set="report"
+                    t-value="o.env['ir.actions.report']._get_report_from_name(xmlid)"
+                />
+                <t t-set="partner" t-value="report._get_partner(o.partner_id)" />
                 <div class="row" name="address_layout">
                     <div class="col-7" name="partner_address">
-                        <t
-                            t-set="partner_name"
-                            t-value="o.env['ir.actions.report']._get_partner(xmlid, o.partner_id)"
+                        <div
+                            t-esc="partner"
+                            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": true}'
                         />
                         <div
-                            t-esc="partner_name"
-                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
-                        />
+                            name="information_block"
+                            t-if="information_block"
+                            class="mt-3"
+                        >
+                            <t t-out="information_block" />
+                        </div>
                     </div>
                     <div class="col-5" name="company_address">
                         <ul class="list-unstyled">
-                            <li t-if="company.is_company_details_empty"><t
+                            <li t-if="company.is_company_details_empty">
+                                <t
                                     t-esc="company.partner_id"
                                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
-                                /></li>
+                                />
+                            </li>
                             <li t-else=""><t t-esc="company.company_details" /></li>
                             <li t-if="forced_vat">
                                 <t t-esc="company.country_id.vat_label or 'Tax ID'" />:
                                 <span t-esc="forced_vat" />
                             </li>
                         </ul>
+                        <t
+                            t-set="remit_to_bank"
+                            t-value="report._get_remit_to_bank(o)"
+                        />
+                        <div name="remit_to_bank" t-if="remit_to_bank" class="mt16">
+                            <strong>Remit-to:</strong>
+                            <ul class="list-unstyled">
+                                <li><span t-field="remit_to_bank.bank_id" /></li>
+                                <li><span t-field="remit_to_bank.acc_number" /></li>
+                                <li>
+                                    <span t-field="remit_to_bank.acc_holder_name" />
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <t t-if="information_block">
-                    <t t-set="colclass" t-value="'col-5 offset-1'" />
-                    <div name="information_block" class="col-6">
-                        <t t-out="information_block" />
-                    </div>
-                </t>
             </t>
         </xpath>
     </template>

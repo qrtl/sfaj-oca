@@ -8,6 +8,7 @@
                 <group>
                     <field name="apply_alternative_layout" />
                     <field name="show_commercial_partner" />
+                    <field name="show_remit_to_bank" />
                 </group>
             </xpath>
         </field>
