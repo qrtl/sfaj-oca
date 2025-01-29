@@ -12,6 +12,7 @@
         "reports/report.xml",
         "reports/report_summary_invoice.xml",
         "views/account_billing_views.xml",
+        "views/res_config_settings_views.xml",
     ],
     "installable": True,
 }
