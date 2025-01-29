@@ -1,10 +1,6 @@
 <odoo>
     <template id="report_summary_invoice_document">
         <t t-call="web.external_layout">
-            <div
-                t-field="o.partner_id.commercial_partner_id"
-                t-options='{"widget": "contact", "fields": ["phone"]}'
-            />
             <div class="mt-5">
                 <div class="page">
                     <h2>
