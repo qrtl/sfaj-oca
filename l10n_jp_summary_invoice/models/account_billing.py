@@ -30,12 +30,22 @@ class AccountBilling(models.Model):
         "account.journal",
         help="This journal will be used for tax adjustment journal entry.",
     )
+    company_partner_id = fields.Many2one(related="company_id.partner_id", store=True)
+    remit_to_bank_id = fields.Many2one(
+        "res.partner.bank",
+        "Remit-to Bank",
+        domain="[('partner_id', '=', company_partner_id)]",
+        help="If not specified, the first bank account linked to the company will show "
+        "in the report.",
+    )
 
     @api.depends("billing_line_ids")
     def _compute_billing_date_due(self):
         for billing in self:
+            if not billing.billing_line_ids:
+                continue
             billing.date_due = max(
-                move.invoice_date_due for move in self.billing_line_ids.move_id
+                move.invoice_date_due for move in billing.billing_line_ids.move_id
             )
 
     @api.depends("billing_line_ids.move_id")
