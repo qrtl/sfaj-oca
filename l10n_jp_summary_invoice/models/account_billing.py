@@ -1,7 +1,6 @@
 # Copyright 2024-2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.tools.float_utils import float_round
 
 
@@ -73,9 +72,6 @@ class AccountBilling(models.Model):
         "currency_id",
     )
     def _compute_tax_totals(self):
-        """Computed field used for custom widget's rendering.
-        Only set on invoices.
-        """
         for bill in self:
             invoice_lines = bill.billing_line_ids.move_id.invoice_line_ids
             base_lines = invoice_lines.filtered(
@@ -173,7 +169,7 @@ class AccountBilling(models.Model):
                     ]
 
     def validate_billing(self):
-        super().validate_billing()
+        res = super().validate_billing()
         tax_adjustment_tax = self.env["account.tax"].search(
             [("name", "=", "Adjustment")], limit=1
         )
@@ -188,10 +184,11 @@ class AccountBilling(models.Model):
             )
         for rec in self:
             invoice = self.billing_line_ids[0].move_id
-            receivable_line = invoice.line_ids.filtered(
-                lambda line: line.account_id.account_type == "asset_receivable"
-            )
-            receivable_account = receivable_line[0].account_id
+            receivable_account = rec.partner_id.property_account_receivable_id
+            # receivable_line = invoice.line_ids.filtered(
+            #     lambda line: line.account_id.account_type == "asset_receivable"
+            # )
+            # receivable_account = receivable_line[0].account_id
             tax_line = invoice.line_ids.filtered(
                 lambda line: line.display_type == "tax"
                 or (line.display_type == "rounding" and line.tax_repartition_line_id)
@@ -215,9 +212,7 @@ class AccountBilling(models.Model):
                     tax_credit_amount = abs(difference) if difference > 0 else 0
                     tax_debit_amount = abs(difference) if difference < 0 else 0
                     adjustment_entry_vals["line_ids"].append(
-                        (
-                            0,
-                            0,
+                        Command.create(
                             {
                                 "account_id": tax_account.id,
                                 "credit": tax_credit_amount,
@@ -230,9 +225,7 @@ class AccountBilling(models.Model):
                     debit += tax_credit_amount
                     credit += tax_debit_amount
             adjustment_entry_vals["line_ids"].append(
-                (
-                    0,
-                    0,
+                Command.create(
                     {
                         "account_id": receivable_account.id,
                         "debit": debit,
@@ -254,12 +247,12 @@ class AccountBilling(models.Model):
                 )
             ).with_context(dynamic_unlink=True).unlink()
             rec.tax_adjustment_entry_id.action_post()
-        return
+        return res
 
     def action_cancel(self):
-        super().action_cancel()
+        res = super().action_cancel()
         for rec in self:
             rec.tax_adjustment_entry_id.button_draft()
             rec.tax_adjustment_entry_id.button_cancel()
             rec.tax_adjustment_entry_id = False
-        return
+        return res

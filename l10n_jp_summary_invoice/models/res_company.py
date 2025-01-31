@@ -11,3 +11,8 @@ class ResCompany(models.Model):
         translate=True,
         help="Content here will be displayed in the summary invoice report.",
     )
+    show_sale_order_number = fields.Boolean(
+        "Show Sales Order Number",
+        help="If enabled, the sales order number will be displayed in the summary "
+        "invoice report lines.",
+    )

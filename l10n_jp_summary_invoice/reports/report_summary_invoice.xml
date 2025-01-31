@@ -9,7 +9,7 @@
                         <span t-if="o.state == 'cancel'">Cancelled Invoice</span>
                         <span t-field="o.name" />
                     </h2>
-                    <div>
+                    <div t-if="o.company_id.summary_invoice_remark">
                         <span t-field="o.company_id.summary_invoice_remark" />
                     </div>
                     <div
@@ -39,13 +39,26 @@
                         t-set="display_discount"
                         t-value="any(l.discount for l in o.billing_line_ids.move_id.invoice_line_ids)"
                     />
+                    <t
+                        t-set="show_sale_order_number"
+                        t-value="o.company_id.show_sale_order_number"
+                    />
+                    <t
+                        t-set="line_columns"
+                        t-value="7 + int(display_discount) + int(show_sale_order_number)"
+                    />
                     <table class="table table-sm o_main_table">
                         <thead>
                             <tr>
                                 <th
+                                    t-if="show_sale_order_number"
                                     name="th_order_num"
                                     class="text-start"
-                                >Order No. / Reference</th>
+                                >Order No.</th>
+                                <th
+                                    name="th_order_ref"
+                                    class="text-start"
+                                >Reference</th>
                                 <th
                                     name="th_description"
                                     class="text-start"
@@ -70,9 +83,7 @@
                                 <t t-foreach="invoice.invoice_line_ids" t-as="line">
                                     <t t-if="line == invoice.invoice_line_ids[0]">
                                         <tr>
-                                            <td
-                                                t-attf-colspan="{{8 if display_discount else 7}}"
-                                            >
+                                            <td t-att-colspan="line_columns">
                                                 <span t-field="invoice.invoice_date" />
                                                 <span t-field="invoice.name" />
                                             </td>
@@ -87,14 +98,15 @@
                                         t-value="', '.join([(tax.description or tax.name) for tax in line.tax_ids])"
                                     />
                                     <tr>
-                                        <td name="td_order_num" class="text-start">
+                                        <td
+                                            t-if="show_sale_order_number"
+                                            name="td_order_num"
+                                            class="text-start"
+                                        >
                                             <span t-esc="order.name" />
-                                            <t t-if="order.client_order_ref">
-                                                <span> / </span>
-                                                <span
-                                                    t-field="order.client_order_ref"
-                                                />
-                                            </t>
+                                        </td>
+                                        <td name="td_order_ref" class="text-start">
+                                            <span t-esc="order.client_order_ref" />
                                         </td>
                                         <td name="td_description" class="text-start">
                                             <span t-field="line.name" />
@@ -131,9 +143,7 @@
                                     </tr>
                                 </t>
                                 <tr>
-                                    <td
-                                        t-attf-colspan="{{8 if display_discount else 7}}"
-                                    >
+                                    <td t-att-colspan="line_columns">
                                         <i class="fa fa-square" />
                                         <span t-field="invoice.partner_id.name" />
                                     </td>
@@ -141,7 +151,7 @@
                                 <tr>
                                     <td
                                         class="text-end"
-                                        t-attf-colspan="{{7 if display_discount else 6}}"
+                                        t-att-colspan="line_columns - 1"
                                     >Amount Untaxed</td>
                                     <td><span t-field="invoice.amount_untaxed" /></td>
                                 </tr>

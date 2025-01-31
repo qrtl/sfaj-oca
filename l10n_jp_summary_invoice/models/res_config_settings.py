@@ -10,3 +10,6 @@ class ResConfigSettings(models.TransientModel):
     summary_invoice_remark = fields.Html(
         related="company_id.summary_invoice_remark", readonly=False
     )
+    show_sale_order_number = fields.Boolean(
+        related="company_id.show_sale_order_number", readonly=False
+    )
