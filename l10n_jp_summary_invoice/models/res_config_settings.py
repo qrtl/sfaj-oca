@@ -13,3 +13,9 @@ class ResConfigSettings(models.TransientModel):
     show_sale_order_number = fields.Boolean(
         related="company_id.show_sale_order_number", readonly=False
     )
+    show_invoice_narration = fields.Boolean(
+        related="company_id.show_invoice_narration", readonly=False
+    )
+    show_invoice_total_amount = fields.Boolean(
+        related="company_id.show_invoice_total_amount", readonly=False
+    )

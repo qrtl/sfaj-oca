@@ -16,3 +16,13 @@ class ResCompany(models.Model):
         help="If enabled, the sales order number will be displayed in the summary "
         "invoice report lines.",
     )
+    show_invoice_narration = fields.Boolean(
+        default=True,
+        help="If enabled, the invoice narration will be displayed in the summary "
+        "invoice report.",
+    )
+    show_invoice_total_amount = fields.Boolean(
+        default=True,
+        help="If enabled, the invoice total amount will be displayed in the summary "
+        "invoice report.",
+    )
