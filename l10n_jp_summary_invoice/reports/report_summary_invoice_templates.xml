@@ -96,18 +96,17 @@
                             </td>
                         </tr>
                     </t>
-                    <!-- <tr>
+                    <tr t-if="o.company_id.show_invoice_narration and invoice.narration" name="invoice_narration">
                         <td t-att-colspan="line_columns">
-                            <i class="fa fa-square" />
-                            <span t-field="invoice.partner_id.name" />
-                        </td>
-                    </tr> -->
-                    <tr name="amount_untaxed">
+                            <span t-field="invoice.narration" />
+                        </td>    
+                    </tr>
+                    <tr t-if="o.company_id.show_invoice_total_amount" name="amount_untaxed">
                         <td
                             class="text-end"
                             t-att-colspan="line_columns - 1"
                         >Amount Untaxed</td>
-                        <td><span t-field="invoice.amount_untaxed" /></td>
+                        <td class="text-end"><span class="text-nowrap" t-field="invoice.amount_untaxed" /></td>
                     </tr>
                 </t>
             </tbody>

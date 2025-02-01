@@ -1,5 +1,6 @@
 # Copyright 2024-2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
+
 from odoo import Command, api, fields, models
 from odoo.tools.float_utils import float_round
 

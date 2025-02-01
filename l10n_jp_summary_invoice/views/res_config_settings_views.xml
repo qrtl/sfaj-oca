@@ -53,7 +53,35 @@
                         <div class="o_setting_right_pane">
                             <label for="show_sale_order_number" />
                             <div class="text-muted">
-                                Show the sales order number in the summary invoice report lines.
+                                Show the sales order number in the summary invoice report lines
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="col-12 col-lg-6 o_setting_box"
+                        id="show_invoice_narration"
+                    >
+                        <div class="o_setting_left_pane">
+                            <field name="show_invoice_narration" />
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="show_invoice_narration" />
+                            <div class="text-muted">
+                                The narration will appear for each invoice in the summary invoice report if selected
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="col-12 col-lg-6 o_setting_box"
+                        id="show_invoice_total_amount"
+                    >
+                        <div class="o_setting_left_pane">
+                            <field name="show_invoice_total_amount" />
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="show_invoice_total_amount" />
+                            <div class="text-muted">
+                                The total amount per invoice will appear in the summary invoice report if selected
                             </div>
                         </div>
                     </div>
