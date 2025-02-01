@@ -12,7 +12,7 @@
         />
         <t
             t-set="line_columns"
-            t-value="6 + int(display_discount) + int(show_order_number) + int(show_reference)"
+            t-value="5 + int(display_discount) + int(show_order_number) + int(show_reference)"
         />
         <table class="table table-sm o_main_table">
             <thead>
@@ -29,8 +29,7 @@
                     >Reference</th>
                     <th name="th_description" class="text-start">Description</th>
                     <th name="th_quantity" class="text-end">Quantity</th>
-                    <th name="th_uom" class="text-start">UoM</th>
-                    <th name="th_price" class="text-end">Price</th>
+                    <th name="th_unit_price" class="text-end">Unit Price</th>
                     <th name="th_discount" t-if="display_discount" class="text-end">
                         <span>Disc.%</span>
                     </th>
@@ -71,11 +70,9 @@
                             </td>
                             <td name="td_quantity" class="text-end">
                                 <span t-field="line.quantity" />
+                                <span t-field="line.product_uom_id" groups="uom.group_uom" />
                             </td>
-                            <td name="td_uom">
-                                <span t-field="line.product_uom_id.name" />
-                            </td>
-                            <td name="td_price" class="text-end">
+                            <td name="td_unit_price" class="text-end">
                                 <span class="text-nowrap" t-field="line.price_unit" />
                             </td>
                             <td
@@ -105,7 +102,9 @@
                         <td
                             class="text-end"
                             t-att-colspan="line_columns - 1"
-                        >Amount Untaxed</td>
+                        >
+                            <strong>Amount Untaxed</strong>
+                        </td>
                         <td class="text-end"><span class="text-nowrap" t-field="invoice.amount_untaxed" /></td>
                     </tr>
                 </t>
@@ -114,12 +113,13 @@
     </template>
     <template id="report_summary_invoice_document">
         <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context(lang=lang)" />
             <div class="mt-3">
                 <div class="page">
                     <h2>
-                        <span t-if="o.state == 'billed'">Invoice</span>
-                        <span t-if="o.state == 'draft'">Draft Invoice</span>
-                        <span t-if="o.state == 'cancel'">Cancelled Invoice</span>
+                        <span t-if="o.state == 'billed'">Summary Invoice</span>
+                        <span t-if="o.state == 'draft'">Draft Summary Invoice</span>
+                        <span t-if="o.state == 'cancel'">Cancelled Summary Invoice</span>
                         <span t-field="o.name" />
                     </h2>
                     <div t-if="o.company_id.summary_invoice_remark">
@@ -140,11 +140,11 @@
                             </h3>
                         </div>
                         <div class="col-auto mw-100 mb-2">
-                            <strong>Biling Date:</strong>
+                            <strong>Billing Date:</strong>
                             <p class="m-0" t-field="o.date" />
                         </div>
                         <div class="col-auto mw-100 mb-2">
-                            <strong>Due Date:</strong>
+                            <strong>Payment Due:</strong>
                             <p class="m-0" t-field="o.date_due" />
                         </div>
                     </div>
@@ -174,7 +174,8 @@
     <template id="report_summary_invoice">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="l10n_jp_summary_invoice.report_summary_invoice_document" />
+                <t t-set="lang" t-value="o.partner_id.lang"/>
+                <t t-call="l10n_jp_summary_invoice.report_summary_invoice_document" t-lang="lang" />
             </t>
         </t>
     </template>
