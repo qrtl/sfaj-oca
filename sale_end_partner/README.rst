@@ -28,7 +28,8 @@ Sale End Partner
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module introduces the end_partner_id field in both sales and invoices, ensuring its propagation from sales orders to invoices. Additionally, this field enables grouping in sales and invoice analysis.
+This module introduces the end_partner_id field in both sales and invoices, ensuring its propagation from sales orders to invoices.
+Additionally, this field enables grouping in sales and invoice analysis.
 
 **Table of contents**
 
@@ -38,7 +39,8 @@ This module introduces the end_partner_id field in both sales and invoices, ensu
 Use Cases / Context
 ===================
 
-In a wholesale company, products are distributed to agents, who then sell them to end customers. The company also wants to analyze sales based on the end customer, not just the agent.
+In a wholesale company, products are distributed to agents, who then sell them to end customers.
+The company also wants to analyze sales based on the end customer, not just the agent.
 
 Bug Tracker
 ===========
