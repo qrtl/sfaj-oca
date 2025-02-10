@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field
-                    name="end_partner_id"
+                    name="partner_end_customer_id"
                     invisible="context.get('default_move_type') not in ('out_invoice', 'out_refund', 'out_receipt')"
                 />
             </xpath>
@@ -23,7 +23,7 @@
                 position="after"
             >
                 <field
-                    name="end_partner_id"
+                    name="partner_end_customer_id"
                     invisible="context.get('default_move_type') not in ('out_invoice', 'out_refund', 'out_receipt')"
                     optional="hide"
                 />
@@ -37,7 +37,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field
-                    name="end_partner_id"
+                    name="partner_end_customer_id"
                     attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}"
                 />
             </xpath>

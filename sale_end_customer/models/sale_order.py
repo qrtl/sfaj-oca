@@ -7,15 +7,14 @@ from odoo import fields, models
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    end_partner_id = fields.Many2one(
+    partner_end_customer_id = fields.Many2one(
         "res.partner",
         string="End Customer",
         tracking=True,
-        states={state: [("readonly", True)] for state in {"sale", "done", "cancel"}},
-        domain="[('type', '!=', 'private'), ('company_id', 'in', (False, company_id))]",
+        check_company=True,
     )
 
     def _prepare_invoice(self):
         invoice_vals = super()._prepare_invoice()
-        invoice_vals["end_partner_id"] = self.end_partner_id.id
+        invoice_vals["partner_end_customer_id"] = self.partner_end_customer_id.id
         return invoice_vals

@@ -7,11 +7,11 @@ from odoo import fields, models
 class AccountInvoiceReport(models.Model):
     _inherit = "account.invoice.report"
 
-    end_partner_id = fields.Many2one("res.partner", string="End Customer")
+    partner_end_customer_id = fields.Many2one("res.partner", string="End Customer")
 
     def _select(self):
         select_str = super()._select()
         select_str += """
-            , move.end_partner_id as end_partner_id
+            , move.partner_end_customer_id as partner_end_customer_id
             """
         return select_str

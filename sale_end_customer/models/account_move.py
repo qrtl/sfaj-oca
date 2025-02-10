@@ -7,12 +7,9 @@ from odoo import fields, models
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    end_partner_id = fields.Many2one(
+    partner_end_customer_id = fields.Many2one(
         "res.partner",
         string="End Customer",
-        readonly=True,
         tracking=True,
-        states={"draft": [("readonly", False)]},
-        ondelete="restrict",
         check_company=True,
     )

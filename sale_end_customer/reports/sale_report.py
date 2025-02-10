@@ -7,15 +7,15 @@ from odoo import fields, models
 class SaleReport(models.Model):
     _inherit = "sale.report"
 
-    end_partner_id = fields.Many2one("res.partner", string="End Customer")
+    partner_end_customer_id = fields.Many2one("res.partner", string="End Customer")
 
     def _select_additional_fields(self):
         res = super()._select_additional_fields()
-        res["end_partner_id"] = "s.end_partner_id"
+        res["partner_end_customer_id"] = "s.partner_end_customer_id"
         return res
 
     def _group_by_sale(self):
         res = super()._group_by_sale()
         res += """,
-            s.end_partner_id"""
+            s.partner_end_customer_id"""
         return res

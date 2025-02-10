@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="sale.view_sales_order_filter" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="end_partner_id" />
+                <field name="partner_end_customer_id" />
             </xpath>
         </field>
     </record>
@@ -16,7 +16,7 @@
         <field name="inherit_id" ref="sale.view_order_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="end_partner_id" optional="hide" />
+                <field name="partner_end_customer_id" optional="hide" />
             </xpath>
         </field>
     </record>
@@ -26,7 +26,7 @@
         <field name="inherit_id" ref="sale.view_quotation_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="end_partner_id" optional="hide" />
+                <field name="partner_end_customer_id" optional="hide" />
             </xpath>
         </field>
     </record>
@@ -36,7 +36,7 @@
         <field name="inherit_id" ref="sale.view_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="end_partner_id" />
+                <field name="partner_end_customer_id" />
             </xpath>
         </field>
     </record>

@@ -1,6 +1,7 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from odoo import Command
 from odoo.tests.common import TransactionCase
 
 
@@ -14,31 +15,21 @@ class TestSaleEndPartner(TransactionCase):
                 "type": "service",
             }
         )
-        cls.partner = cls.env["res.partner"].create(
-            {
-                "name": "Test Customer",
-            }
-        )
-        cls.end_partner = cls.env["res.partner"].create(
-            {
-                "name": "End Customer",
-            }
-        )
+        cls.partner = cls.env["res.partner"].create({"name": "Test Customer"})
+        cls.end_customer = cls.env["res.partner"].create({"name": "End Customer"})
 
     def test_sale_order_invoice_field_propagation(self):
         sale_order = self.env["sale.order"].create(
             {
                 "partner_id": self.partner.id,
-                "end_partner_id": self.end_partner.id,
+                "partner_end_customer_id": self.end_customer.id,
                 "order_line": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "product_id": self.product.id,
                             "product_uom_qty": 1,
                             "price_unit": 100.0,
-                        },
+                        }
                     )
                 ],
             }
@@ -60,4 +51,6 @@ class TestSaleEndPartner(TransactionCase):
             [("invoice_origin", "=", sale_order.name)], limit=1
         )
         self.assertTrue(invoice, "Invoice should be created.")
-        self.assertEqual(invoice.end_partner_id, sale_order.end_partner_id)
+        self.assertEqual(
+            invoice.partner_end_customer_id, sale_order.partner_end_customer_id
+        )
