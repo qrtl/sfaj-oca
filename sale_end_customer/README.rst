@@ -53,6 +53,12 @@ created.
 If an invoice involves multiple sales orders with different end customers, the end
 customer from the last processed sales order will prevail.
 
+Known issues / Roadmap
+======================
+
+The module currently does not adjust the invoice grouping keys (`sale.order._get_invoice_grouping_keys()`)
+to include the end customer field.
+
 Bug Tracker
 ===========
 
