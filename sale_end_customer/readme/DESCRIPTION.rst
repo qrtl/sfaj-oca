@@ -1,2 +1,2 @@
-This module introduces the partner_end_customer_id field in both sales and invoices, ensuring its propagation from sales orders to invoices.
-Additionally, this field enables grouping in sales and invoice analysis.
+This module introduces the End Customer field in sales orders and customer invoices.
+This field is accounted for in sales and invoice analysis reports.

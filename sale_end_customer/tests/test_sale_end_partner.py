@@ -10,10 +10,7 @@ class TestSaleEndPartner(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.product = cls.env["product.product"].create(
-            {
-                "name": "Test Product",
-                "type": "service",
-            }
+            {"name": "Test Product", "type": "service"}
         )
         cls.partner = cls.env["res.partner"].create({"name": "Test Customer"})
         cls.end_customer = cls.env["res.partner"].create({"name": "End Customer"})
@@ -40,11 +37,7 @@ class TestSaleEndPartner(TransactionCase):
             .with_context(
                 **{"active_ids": [sale_order.id], "active_model": "sale.order"}
             )
-            .create(
-                {
-                    "advance_payment_method": "delivered",
-                }
-            )
+            .create({"advance_payment_method": "delivered"})
         )
         invoice_wizard.create_invoices()
         invoice = self.env["account.move"].search(

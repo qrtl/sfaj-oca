@@ -1,2 +1,3 @@
-In a wholesale company, products are distributed to agents, who then sell them to end customers.
-The company also wants to analyze sales based on the end customer, not just the agent.
+There are trade flows where your direct customer is not the end customer of the sold
+products (e.g., you sell to a dealer, and the dealer sells to the end customer). In such
+cases, you may want to record the end customers in your sales transactions.
