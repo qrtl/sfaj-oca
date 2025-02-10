@@ -28,8 +28,8 @@ Sale End Customer
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module introduces the partner_end_customer_id field in both sales and invoices, ensuring its propagation from sales orders to invoices.
-Additionally, this field enables grouping in sales and invoice analysis.
+This module introduces the End Customer field in sales orders and customer invoices.
+This field is accounted for in sales and invoice analysis reports.
 
 **Table of contents**
 
@@ -39,8 +39,19 @@ Additionally, this field enables grouping in sales and invoice analysis.
 Use Cases / Context
 ===================
 
-In a wholesale company, products are distributed to agents, who then sell them to end customers.
-The company also wants to analyze sales based on the end customer, not just the agent.
+There are trade flows where your direct customer is not the end customer of the sold
+products (e.g., you sell to a dealer, and the dealer sells to the end customer). In such
+cases, you may want to record the end customers in your sales transactions.
+
+Usage
+=====
+
+Enter the end customer field in the sales order as appropriate. The assigned value will
+be passed to the corresponding field in the customer invoice when the invoice is
+created.
+
+If an invoice involves multiple sales orders with different end customers, the end
+customer from the last processed sales order will prevail.
 
 Bug Tracker
 ===========
