@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-24 04:09+0000\n"
-"PO-Revision-Date: 2024-10-24 04:09+0000\n"
+"POT-Creation-Date: 2025-02-15 08:24+0000\n"
+"PO-Revision-Date: 2025-02-15 08:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,9 +16,19 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: report_alternative_layout
+#: model_terms:ir.ui.view,arch_db:report_alternative_layout.external_layout_standard
+msgid "<strong>Remit-to:</strong>"
+msgstr "<strong>振込先:</strong>"
+
+#. module: report_alternative_layout
 #: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__apply_alternative_layout
 msgid "Apply Alternative Layout"
 msgstr "代替レイアウトを適用"
+
+#. module: report_alternative_layout
+#: model:ir.model.fields,help:report_alternative_layout.field_ir_actions_report__show_remit_to_bank
+msgid "If selected, remit-to bank account will show in the report output."
+msgstr "選択すると、印刷帳票に振込先が表示されます。"
 
 #. module: report_alternative_layout
 #: model:ir.model.fields,help:report_alternative_layout.field_ir_actions_report__apply_alternative_layout
@@ -42,3 +52,8 @@ msgstr "レポートアクション"
 #: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_commercial_partner
 msgid "Show Commercial Partner"
 msgstr "商業取引先(親)を表示"
+
+#. module: report_alternative_layout
+#: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_remit_to_bank
+msgid "Show Remit-to Bank"
+msgstr "振込先を表示"
