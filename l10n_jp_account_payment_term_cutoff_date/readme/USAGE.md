@@ -1,0 +1,4 @@
+- Go to Invoicing > Configuration > Payment Terms.
+- Select or create a Payment Term.
+- Under the Payment Term Lines, you will see a Cutoff Date field.
+- Set a cutoff date (e.g., 20 for the 20th day of the month).
