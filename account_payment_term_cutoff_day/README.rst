@@ -32,7 +32,7 @@ This module extends the Account Payment Terms functionality by
 introducing a cutoff day field (cutoff_day) in
 account.payment.term.line. With this feature, user can define a specific
 cutoff day for payment terms. If an invoice is dated after this cutoff
-day, the system will automatically shift the due day by one additional
+day, the system will automatically shift the due date by one additional
 month.
 
 **Table of contents**
@@ -46,7 +46,9 @@ Usage
 -  Go to Invoicing > Configuration > Payment Terms.
 -  Select or create a Payment Term.
 -  Under the Payment Term Lines, you will see a Cutoff Day field.
--  Set a cutoff day (e.g., 20 for the 20th day of the month).
+-  The Cutoff Day field can only be entered when "End of Month" is
+   enabled.
+-  Set a Cutoff Day (e.g., 20 for the 20th day of the month).
 
 Bug Tracker
 ===========
