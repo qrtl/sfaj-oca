@@ -1,17 +1,21 @@
 # Copyright 2024-2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import Command, api, fields, models
+from odoo import Command, _, api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_round
 
 
 class AccountBilling(models.Model):
     _inherit = "account.billing"
 
+    # FIXME: Remove these fields
     amount_untaxed = fields.Monetary(compute="_compute_amount", store=True)
     total_amount = fields.Monetary(compute="_compute_amount", store=True)
     taxes = fields.Char(string="Tax", compute="_compute_amount", store=True)
 
+    # Just changing the default value
+    threshold_date_type = fields.Selection(default="invoice_date")
     date_due = fields.Date(
         compute="_compute_billing_date_due",
         store=True,
@@ -38,6 +42,17 @@ class AccountBilling(models.Model):
         help="If not specified, the first bank account linked to the company will show "
         "in the report.",
     )
+
+    @api.constrains("state", "billing_line_ids")
+    def _check_account_move_billability(self):
+        for rec in self:
+            invoices = rec.billing_line_ids.move_id
+            if invoices.filtered(
+                lambda x: len(x.billing_ids.filtered(lambda x: x.state != "cancel")) > 1
+            ):
+                raise ValidationError(
+                    _("An invoice can only be included in one billing.")
+                )
 
     @api.depends("billing_line_ids")
     def _compute_billing_date_due(self):
@@ -92,6 +107,14 @@ class AccountBilling(models.Model):
                 )
             ]
             bill.tax_totals = self.env["account.tax"]._prepare_tax_totals(**kwargs)
+
+    def _get_moves(self, date=False, types=False):
+        moves = super()._get_moves(date=date, types=types)
+        # Prevent the billing from adding already billed invoices
+        moves -= moves.filtered(
+            lambda x: x.billing_ids.filtered(lambda x: x.state != "cancel")
+        )
+        return moves
 
     def _get_tax_summary_from_invoices(self):
         """Get the actual tax amounts per tax based on the invoice lines
@@ -171,6 +194,7 @@ class AccountBilling(models.Model):
 
     def validate_billing(self):
         res = super().validate_billing()
+        # FIXME: Avoid using name
         tax_adjustment_tax = self.env["account.tax"].search(
             [("name", "=", "Adjustment")], limit=1
         )
@@ -186,10 +210,6 @@ class AccountBilling(models.Model):
         for rec in self:
             invoice = self.billing_line_ids[0].move_id
             receivable_account = rec.partner_id.property_account_receivable_id
-            # receivable_line = invoice.line_ids.filtered(
-            #     lambda line: line.account_id.account_type == "asset_receivable"
-            # )
-            # receivable_account = receivable_line[0].account_id
             tax_line = invoice.line_ids.filtered(
                 lambda line: line.display_type == "tax"
                 or (line.display_type == "rounding" and line.tax_repartition_line_id)
@@ -200,9 +220,9 @@ class AccountBilling(models.Model):
             )
             if not tax_differences:
                 continue
-            journal = rec.tax_entry_journal_id
+            # journal = rec.tax_entry_journal_id
             adjustment_entry_vals = {
-                "journal_id": journal.id,
+                "move_type": "entry",
                 "date": rec.date,
                 "line_ids": [],
             }
@@ -210,14 +230,14 @@ class AccountBilling(models.Model):
             debit = 0.0
             for tax, difference in tax_differences.items():
                 if difference != 0:
-                    tax_credit_amount = abs(difference) if difference > 0 else 0
                     tax_debit_amount = abs(difference) if difference < 0 else 0
+                    tax_credit_amount = abs(difference) if difference > 0 else 0
                     adjustment_entry_vals["line_ids"].append(
                         Command.create(
                             {
                                 "account_id": tax_account.id,
-                                "credit": tax_credit_amount,
                                 "debit": tax_debit_amount,
+                                "credit": tax_credit_amount,
                                 "name": f"Tax Adjustment for {tax.name}",
                                 "tax_ids": [(6, 0, tax_adjustment_tax.ids)],
                             },
@@ -228,6 +248,7 @@ class AccountBilling(models.Model):
             adjustment_entry_vals["line_ids"].append(
                 Command.create(
                     {
+                        "partner_id": rec.partner_id.id,
                         "account_id": receivable_account.id,
                         "debit": debit,
                         "credit": credit,
