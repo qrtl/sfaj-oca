@@ -70,7 +70,10 @@
                             </td>
                             <td name="td_quantity" class="text-end">
                                 <span t-field="line.quantity" />
-                                <span t-field="line.product_uom_id" groups="uom.group_uom" />
+                                <span
+                                    t-field="line.product_uom_id"
+                                    groups="uom.group_uom"
+                                />
                             </td>
                             <td name="td_unit_price" class="text-end">
                                 <span class="text-nowrap" t-field="line.price_unit" />
@@ -93,19 +96,27 @@
                             </td>
                         </tr>
                     </t>
-                    <tr t-if="o.company_id.show_invoice_narration and invoice.narration" name="invoice_narration">
+                    <tr
+                        t-if="o.company_id.show_invoice_narration and invoice.narration"
+                        name="invoice_narration"
+                    >
                         <td t-att-colspan="line_columns">
                             <span t-field="invoice.narration" />
-                        </td>    
+                        </td>
                     </tr>
-                    <tr t-if="o.company_id.show_invoice_total_amount" name="amount_untaxed">
-                        <td
-                            class="text-end"
-                            t-att-colspan="line_columns - 1"
-                        >
+                    <tr
+                        t-if="o.company_id.show_invoice_total_amount"
+                        name="amount_untaxed"
+                    >
+                        <td class="text-end" t-att-colspan="line_columns - 1">
                             <strong>Amount Untaxed</strong>
                         </td>
-                        <td class="text-end"><span class="text-nowrap" t-field="invoice.amount_untaxed" /></td>
+                        <td class="text-end">
+                            <span
+                                class="text-nowrap"
+                                t-field="invoice.amount_untaxed"
+                            />
+                        </td>
                     </tr>
                 </t>
             </tbody>
@@ -119,7 +130,9 @@
                     <h2>
                         <span t-if="o.state == 'billed'">Summary Invoice</span>
                         <span t-if="o.state == 'draft'">Draft Summary Invoice</span>
-                        <span t-if="o.state == 'cancel'">Cancelled Summary Invoice</span>
+                        <span
+                            t-if="o.state == 'cancel'"
+                        >Cancelled Summary Invoice</span>
                         <span t-field="o.name" />
                     </h2>
                     <div t-if="o.company_id.summary_invoice_remark">
@@ -174,8 +187,11 @@
     <template id="report_summary_invoice">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-set="lang" t-value="o.partner_id.lang"/>
-                <t t-call="l10n_jp_summary_invoice.report_summary_invoice_document" t-lang="lang" />
+                <t t-set="lang" t-value="o.partner_id.lang" />
+                <t
+                    t-call="l10n_jp_summary_invoice.report_summary_invoice_document"
+                    t-lang="lang"
+                />
             </t>
         </t>
     </template>
