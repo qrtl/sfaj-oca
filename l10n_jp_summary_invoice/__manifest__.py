@@ -12,6 +12,8 @@
         "reports/report_summary_invoice_templates.xml",
         "reports/summary_invoice_reports.xml",
         "views/account_billing_views.xml",
+        "views/account_move_views.xml",
+        "views/account_tax_views.xml",
         "views/res_config_settings_views.xml",
     ],
     "installable": True,

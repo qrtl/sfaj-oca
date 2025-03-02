@@ -1,18 +1,14 @@
 # Copyright 2024-2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+from collections import defaultdict
+
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools.float_utils import float_round
 
 
 class AccountBilling(models.Model):
     _inherit = "account.billing"
-
-    # FIXME: Remove these fields
-    amount_untaxed = fields.Monetary(compute="_compute_amount", store=True)
-    total_amount = fields.Monetary(compute="_compute_amount", store=True)
-    taxes = fields.Char(string="Tax", compute="_compute_amount", store=True)
 
     # Just changing the default value
     threshold_date_type = fields.Selection(default="invoice_date")
@@ -47,11 +43,16 @@ class AccountBilling(models.Model):
     def _check_account_move_billability(self):
         for rec in self:
             invoices = rec.billing_line_ids.move_id
-            if invoices.filtered(
+            invoice_not_for_billing = invoices.filtered(
                 lambda x: len(x.billing_ids.filtered(lambda x: x.state != "cancel")) > 1
-            ):
+                or x.is_not_for_billing
+            )[:1]
+            if invoice_not_for_billing:
                 raise ValidationError(
-                    _("An invoice can only be included in one billing.")
+                    _(
+                        "The invoice %s should not be included in this summary invoice.",
+                        invoice_not_for_billing.name,
+                    )
                 )
 
     @api.depends("billing_line_ids")
@@ -62,24 +63,6 @@ class AccountBilling(models.Model):
             billing.date_due = max(
                 move.invoice_date_due for move in billing.billing_line_ids.move_id
             )
-
-    @api.depends("billing_line_ids.move_id")
-    def _compute_amount(self):
-        for billing in self:
-            amount_untaxed = 0.0
-            total_amount = 0.0
-            taxes_set = set()
-            for line in billing.billing_line_ids:
-                amount_untaxed += line.move_id.amount_untaxed
-                total_amount += line.move_id.amount_total
-                for invoice_line in line.move_id.invoice_line_ids:
-                    if invoice_line.tax_ids:
-                        for tax in invoice_line.tax_ids:
-                            tax_name = tax.description or tax.name
-                            taxes_set.add(tax_name)
-            billing.amount_untaxed = amount_untaxed
-            billing.total_amount = total_amount
-            billing.taxes = ", ".join(sorted(taxes_set))
 
     @api.depends_context("lang")
     @api.depends(
@@ -113,60 +96,40 @@ class AccountBilling(models.Model):
         # Prevent the billing from adding already billed invoices
         moves -= moves.filtered(
             lambda x: x.billing_ids.filtered(lambda x: x.state != "cancel")
+            or x.is_not_for_billing
         )
         return moves
 
-    def _get_tax_summary_from_invoices(self):
+    def _get_tax_amount_groups_from_invoices(self):
         """Get the actual tax amounts per tax based on the invoice lines
         associated with billing lines.
-        Returns a dictionary where each key is a tax and the value is the total tax amount.
         """
         self.ensure_one()
-        tax_summary = {}
-        for line in self.billing_line_ids:
-            invoice = line.move_id
-            for tax_line in invoice.line_ids.filtered(
-                lambda line: line.display_type == "tax"
-                or (line.display_type == "rounding" and line.tax_repartition_line_id)
-            ):
-                tax = tax_line.tax_line_id
-                tax_summary[tax] = tax_summary.get(tax, 0) + tax_line.credit
-        return tax_summary
+        tax_amount_groups = self.env["account.move.line"].read_group(
+            domain=[
+                ("move_id", "in", self.billing_line_ids.move_id.ids),
+                "|",
+                ("display_type", "=", "tax"),
+                "&",
+                ("display_type", "=", "rounding"),
+                ("tax_repartition_line_id", "!=", False),
+            ],
+            fields=["tax_group_id", "balance"],
+            groupby=["tax_group_id"],
+        )
+        return tax_amount_groups
 
-    def _group_invoice_lines_by_tax(self):
+    def _group_invoice_lines_by_tax_group(self):
         """Group invoice lines by tax, summing the subtotals for each tax type.
         Returns a dictionary with tax as keys and subtotal as values.
         """
         self.ensure_one()
-        grouped_lines = {}
-        for line in self.billing_line_ids:
-            invoice = line.move_id
-            for inv_line in invoice.invoice_line_ids:
-                for tax in inv_line.tax_ids:
-                    if tax not in grouped_lines:
-                        grouped_lines[tax] = inv_line.price_subtotal
-                    else:
-                        grouped_lines[tax] += inv_line.price_subtotal
+        grouped_lines = defaultdict(float)
+        for bill_line in self.billing_line_ids:
+            for inv_line in bill_line.move_id.invoice_line_ids:
+                for tax_group in inv_line.tax_ids.tax_group_id:
+                    grouped_lines[tax_group] += inv_line.price_subtotal
         return grouped_lines
-
-    def _get_calculated_tax_summary(self):
-        """Calculate the tax amounts per tax based on the subtotal of each invoice line.
-        Returns a dictionary where each key is a tax and the value is the expected tax amount.
-        """
-        self.ensure_one()
-        calculated_tax_summary = {}
-        tax_grouped_lines = self._group_invoice_lines_by_tax()
-        for tax, subtotal in tax_grouped_lines.items():
-            # Compute tax amount based on the subtotal and tax rates
-            tax_amount = tax.compute_all(subtotal, self.currency_id)["taxes"][0][
-                "amount"
-            ]
-            if self.env.company.tax_calculation_rounding_method == "round_globally":
-                tax_amount = float_round(
-                    tax_amount, precision_rounding=self.currency_id.rounding
-                )
-            calculated_tax_summary[tax] = tax_amount
-        return calculated_tax_summary
 
     def _get_tax_differences(self, tax_summary, calculated_tax_summary):
         """Compare actual tax amounts from invoices with the expected tax amounts,
@@ -181,93 +144,61 @@ class AccountBilling(models.Model):
                 tax_differences[tax] = tax_diff
         return tax_differences
 
-    def _assign_tax_tags_to_entry(self, adjustment_entry, tax_account, tax_differences):
-        """Assign the appropriate tax tags to the adjustment journal entry."""
-        for line in adjustment_entry.line_ids.filtered(
-            lambda l: l.account_id == tax_account and l.tax_ids
-        ):
-            for tax, _ in tax_differences.items():
-                if f"Tax Adjustment for {tax.name}" in line.name:
-                    line.tax_tag_ids = [
-                        (6, 0, tax.invoice_repartition_line_ids[1].tag_ids.ids)
-                    ]
-
     def validate_billing(self):
         res = super().validate_billing()
-        # FIXME: Avoid using name
-        tax_adjustment_tax = self.env["account.tax"].search(
-            [("name", "=", "Adjustment")], limit=1
-        )
-        if not tax_adjustment_tax:
-            tax_adjustment_tax = self.env["account.tax"].create(
-                {
-                    "name": "Adjustment",
-                    "amount": 100.0,
-                    "type_tax_use": "sale",
-                    "price_include": True,
-                }
-            )
         for rec in self:
-            invoice = self.billing_line_ids[0].move_id
-            receivable_account = rec.partner_id.property_account_receivable_id
-            tax_line = invoice.line_ids.filtered(
-                lambda line: line.display_type == "tax"
-                or (line.display_type == "rounding" and line.tax_repartition_line_id)
-            )
-            tax_account = tax_line[0].account_id
-            tax_differences = rec._get_tax_differences(
-                rec._get_tax_summary_from_invoices(), rec._get_calculated_tax_summary()
-            )
-            if not tax_differences:
+            tax_totals = rec.tax_totals
+            groups_by_subtotal = tax_totals.get("groups_by_subtotal", {})
+            key = next(iter(groups_by_subtotal))
+            sign = -1 if rec.bill_type == "out_invoice" else 1
+            tax_group_amount_dict = {
+                entry["tax_group_id"]: entry["tax_group_amount"] * sign
+                for entry in groups_by_subtotal[key]
+            }
+            tax_amount_groups_invoices = rec._get_tax_amount_groups_from_invoices()
+            tax_group_diff_dict = {}
+            for tax_amount_group in tax_amount_groups_invoices:
+                tax_group_id = tax_amount_group["tax_group_id"][0]
+                tax_amount_invoices = tax_amount_group["balance"]
+                tax_amount_bill = tax_group_amount_dict.get(tax_group_id, 0)
+                tax_diff = tax_amount_invoices - tax_amount_bill
+                if tax_diff:
+                    tax_group_diff_dict[tax_group_id] = tax_diff
+            if not tax_group_diff_dict:
                 continue
-            # journal = rec.tax_entry_journal_id
-            adjustment_entry_vals = {
-                "move_type": "entry",
+            invoice_vals = {
+                "partner_id": rec.partner_id.id,
                 "date": rec.date,
+                "is_not_for_billing": True,
                 "line_ids": [],
             }
-            credit = 0.0
-            debit = 0.0
-            for tax, difference in tax_differences.items():
-                if difference != 0:
-                    tax_debit_amount = abs(difference) if difference < 0 else 0
-                    tax_credit_amount = abs(difference) if difference > 0 else 0
-                    adjustment_entry_vals["line_ids"].append(
-                        Command.create(
-                            {
-                                "account_id": tax_account.id,
-                                "debit": tax_debit_amount,
-                                "credit": tax_credit_amount,
-                                "name": f"Tax Adjustment for {tax.name}",
-                                "tax_ids": [(6, 0, tax_adjustment_tax.ids)],
-                            },
-                        )
+            inv_line_account_id = self.env[
+                "account.account"
+            ]._get_most_frequent_account_for_partner(
+                company_id=rec.company_id.id,
+                partner_id=rec.partner_id.id,
+                move_type="out_invoice",
+            )
+            diff_balance = 0.0
+            for tax_group_id, diff in tax_group_diff_dict.items():
+                tax_group = self.env["account.tax.group"].browse(tax_group_id)
+                adjustment_tax = tax_group._get_adjustment_tax()
+                invoice_vals["line_ids"].append(
+                    Command.create(
+                        {
+                            "name": f"Tax Adjustment for {tax_group.name}",
+                            "account_id": inv_line_account_id,
+                            "quantity": 1,
+                            "price_unit": diff,
+                            "tax_ids": [Command.set(adjustment_tax.ids)],
+                        },
                     )
-                    debit += tax_credit_amount
-                    credit += tax_debit_amount
-            adjustment_entry_vals["line_ids"].append(
-                Command.create(
-                    {
-                        "partner_id": rec.partner_id.id,
-                        "account_id": receivable_account.id,
-                        "debit": debit,
-                        "credit": credit,
-                        "name": "Tax Adjustment",
-                    },
                 )
-            )
-            rec.tax_adjustment_entry_id = self.env["account.move"].create(
-                adjustment_entry_vals
-            )
-            rec._assign_tax_tags_to_entry(
-                rec.tax_adjustment_entry_id, tax_account, tax_differences
-            )
-            rec.tax_adjustment_entry_id.line_ids.filtered(
-                lambda line: not (
-                    (line.account_id == tax_account and line.tax_ids)
-                    or (line.account_id == receivable_account)
+                diff_balance += diff
+                invoice_vals["move_type"] = (
+                    "out_invoice" if diff_balance >= 0 else "out_refund"
                 )
-            ).with_context(dynamic_unlink=True).unlink()
+            rec.tax_adjustment_entry_id = self.env["account.move"].create(invoice_vals)
             rec.tax_adjustment_entry_id.action_post()
         return res
 
