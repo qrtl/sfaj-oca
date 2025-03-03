@@ -147,7 +147,9 @@
                                 <tr class="border-black o_total">
                                     <td><strong>Total</strong></td>
                                     <td class="text-right">
-                                        <span t-field="o.amout_total" />
+                                        <span
+                                            t-esc="o.tax_totals['formatted_amount_total']"
+                                        />
                                     </td>
                                 </tr>
                             </h3>
