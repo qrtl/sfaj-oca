@@ -2,14 +2,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountBilling(models.Model):
     _inherit = "account.billing"
 
-    amount_untaxed = fields.Monetary(compute="_compute_amount")
-    amout_total = fields.Monetary(compute="_compute_amount")
     # Just changing the default value
     threshold_date_type = fields.Selection(default="invoice_date")
     date_due = fields.Date(
@@ -63,13 +61,6 @@ class AccountBilling(models.Model):
             billing.date_due = max(
                 move.invoice_date_due for move in billing.billing_line_ids.move_id
             )
-
-    def _compute_amount(self):
-        for rec in self:
-            invoices = rec.billing_line_ids.move_id
-            rec.amount_untaxed = sum(invoices.mapped("amount_untaxed"))
-            # FIXME: Use tax_totals instead of summing up the amount_total
-            rec.amout_total = sum(invoices.mapped("amount_total"))
 
     @api.depends_context("lang")
     @api.depends(
@@ -148,6 +139,12 @@ class AccountBilling(models.Model):
         )
 
     def validate_billing(self):
+        for rec in self:
+            # TODO: Move this chack to account_billing?
+            if rec.billing_line_ids.filtered(lambda x: x.move_id.state != "posted"):
+                raise UserError(
+                    _("All invoices must be posted before validating the billing.")
+                )
         res = super().validate_billing()
         for rec in self.filtered(lambda x: x.bill_type == "out_invoice"):
             tax_totals = rec.tax_totals
@@ -172,6 +169,8 @@ class AccountBilling(models.Model):
             invoice_vals = {
                 "partner_id": rec.partner_id.id,
                 "date": rec.date,
+                "invoice_origin": rec.name,
+                "ref": "Tax Adjustment",
                 "is_not_for_billing": True,
                 "line_ids": [],
             }

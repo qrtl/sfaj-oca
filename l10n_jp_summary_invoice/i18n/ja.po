@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-01 10:13+0000\n"
-"PO-Revision-Date: 2025-02-01 10:13+0000\n"
+"POT-Creation-Date: 2025-03-03 14:12+0000\n"
+"PO-Revision-Date: 2025-03-03 14:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,8 +21,7 @@ msgid ""
 "'Summary Invoice-%s%s' % (object.name, object.state == 'draft' and '-draft' "
 "or '')"
 msgstr ""
-"'合計請求書-%s%s' % (object.name, object.state == 'draft' and '-draft' "
-"or '')"
+"'合計請求書-%s%s' % (object.name, object.state == 'draft' and '-draft' or '')"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.res_config_settings_view_form
@@ -60,17 +59,27 @@ msgstr "<strong>合計</strong>"
 #. module: l10n_jp_summary_invoice
 #: model:ir.model,name:l10n_jp_summary_invoice.model_account_billing
 msgid "Account Billing"
+msgstr "合計請求書"
+
+#. module: l10n_jp_summary_invoice
+#. odoo-python
+#: code:addons/l10n_jp_summary_invoice/models/account_billing.py:0
+#, python-format
+msgid "All invoices must be posted before validating the billing."
+msgstr "すべての請求書が記帳済でなければ合計請求書は検証できません。"
+
+#. module: l10n_jp_summary_invoice
+#: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_billing__threshold_date_type
+msgid ""
+"All invoices with date (threshold date type) before and equal to threshold "
+"date will be listed in billing lines"
 msgstr ""
+"閾日タイプの日付が閾日以前請求書が合計請求書明細行に追加されます。"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.bill_line_section_layout
 msgid "Amount"
 msgstr "金額"
-
-#. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__amount_untaxed
-msgid "Amount Untaxed"
-msgstr "税抜金額"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__tax_totals
@@ -150,9 +159,36 @@ msgid ""
 msgstr "選択がない場合は、会社に紐づく1つ目の銀行口座がレポートに表示されます"
 
 #. module: l10n_jp_summary_invoice
+#: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_tax__rounding_adjustment
+msgid ""
+"If selected, it means that this tax was auto-generated for rounding "
+"adjustment purposes."
+msgstr ""
+"選択されている場合、この税レコードは税額端数丸め調整のために自動生成されたものであることを示します。"
+
+#. module: l10n_jp_summary_invoice
+#: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_bank_statement_line__is_not_for_billing
+#: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_move__is_not_for_billing
+#: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_payment__is_not_for_billing
+msgid "If selected, the invoice is excluded from the billing process."
+msgstr "選択した場合、請求書は合計請求書への追加対象外となります。"
+
+#. module: l10n_jp_summary_invoice
+#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_bank_statement_line__is_not_for_billing
+#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_move__is_not_for_billing
+#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_payment__is_not_for_billing
+msgid "Is Not For Billing"
+msgstr "合計請求書対象外"
+
+#. module: l10n_jp_summary_invoice
 #: model:ir.actions.report,name:l10n_jp_summary_invoice.report_jp_summary_invoice
 msgid "JP Summary Invoice"
 msgstr "合計請求書(日本)"
+
+#. module: l10n_jp_summary_invoice
+#: model:ir.model,name:l10n_jp_summary_invoice.model_account_move
+msgid "Journal Entry"
+msgstr "仕訳"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.bill_line_section_layout
@@ -183,6 +219,11 @@ msgstr "振込先銀行"
 #: model:ir.model,name:l10n_jp_summary_invoice.model_ir_actions_report
 msgid "Report Action"
 msgstr "レポートアクション"
+
+#. module: l10n_jp_summary_invoice
+#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_tax__rounding_adjustment
+msgid "Rounding Adjustment"
+msgstr "丸め調整"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_res_company__show_invoice_narration
@@ -230,9 +271,9 @@ msgid "Summary Invoices"
 msgstr "合計請求書"
 
 #. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__taxes
+#: model:ir.model,name:l10n_jp_summary_invoice.model_account_tax
 msgid "Tax"
-msgstr "消費税"
+msgstr "税"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.view_account_billing_form_inherit
@@ -250,9 +291,21 @@ msgid "Tax Entry Journal"
 msgstr "消費税調整仕訳帳"
 
 #. module: l10n_jp_summary_invoice
+#: model:ir.model,name:l10n_jp_summary_invoice.model_account_tax_group
+msgid "Tax Group"
+msgstr "税グループ"
+
+#. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.bill_line_section_layout
 msgid "Taxes"
 msgstr "消費税"
+
+#. module: l10n_jp_summary_invoice
+#. odoo-python
+#: code:addons/l10n_jp_summary_invoice/models/account_billing.py:0
+#, python-format
+msgid "The invoice %s should not be included in this summary invoice."
+msgstr "請求書 %s はこの合計請求書に追加できません。"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.res_config_settings_view_form
@@ -274,11 +327,18 @@ msgid "This journal will be used for tax adjustment journal entry."
 msgstr "この仕訳帳は消費税調整仕訳に使用されます。"
 
 #. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__total_amount
-msgid "Total Amount"
-msgstr "合計金額"
+#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__threshold_date_type
+msgid "Threshold Date Type"
+msgstr "閾日タイプ"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.bill_line_section_layout
 msgid "Unit Price"
 msgstr "単価"
+
+#. module: l10n_jp_summary_invoice
+#. odoo-python
+#: code:addons/l10n_jp_summary_invoice/models/account_move.py:0
+#, python-format
+msgid "You cannot reset to draft an invoice that has been billed."
+msgstr "合計請求書に追加した請求書はドラフトに戻せません。"
