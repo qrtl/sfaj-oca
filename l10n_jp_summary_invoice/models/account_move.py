@@ -10,3 +10,5 @@ class AccountMove(models.Model):
     is_not_for_billing = fields.Boolean(
         help="If selected, the invoice is excluded from the billing process.",
     )
+
+    # TODO: Block resetting to draft state if it's already billed

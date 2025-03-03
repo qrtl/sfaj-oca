@@ -11,8 +11,10 @@ class AccountTaxGroup(models.Model):
         return self.env["account.tax"].search([("tax_group_id", "=", self.id)], limit=1)
 
     def _get_adjustment_tax(self):
+        self.ensure_one()
         adjustment_tax = self.env["account.tax"].search(
-            [("rounding_adjustment", "=", True)], limit=1
+            [("rounding_adjustment", "=", True), ("tax_group_id", "=", self.id)],
+            limit=1,
         )
         if not adjustment_tax:
             origin_tax = self._get_tax_for_group()

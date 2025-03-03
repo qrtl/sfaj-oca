@@ -130,9 +130,17 @@ class AccountBilling(models.Model):
                 tax_differences[tax] = tax_diff
         return tax_differences
 
+    def _get_inv_line_account_id(self):
+        self.ensure_one()
+        return self.env["account.account"]._get_most_frequent_account_for_partner(
+            company_id=self.company_id.id,
+            partner_id=self.partner_id.id,
+            move_type="out_invoice",
+        )
+
     def validate_billing(self):
         res = super().validate_billing()
-        for rec in self:
+        for rec in self.filtered(lambda x: x.bill_type == "out_invoice"):
             tax_totals = rec.tax_totals
             groups_by_subtotal = tax_totals.get("groups_by_subtotal", {})
             key = next(iter(groups_by_subtotal))
@@ -158,13 +166,7 @@ class AccountBilling(models.Model):
                 "is_not_for_billing": True,
                 "line_ids": [],
             }
-            inv_line_account_id = self.env[
-                "account.account"
-            ]._get_most_frequent_account_for_partner(
-                company_id=rec.company_id.id,
-                partner_id=rec.partner_id.id,
-                move_type="out_invoice",
-            )
+            inv_line_account_id = rec._get_inv_line_account_id()
             diff_balance = 0.0
             for tax_group_id, diff in tax_group_diff_dict.items():
                 tax_group = self.env["account.tax.group"].browse(tax_group_id)
