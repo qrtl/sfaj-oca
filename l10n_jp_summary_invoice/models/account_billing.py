@@ -1,8 +1,6 @@
 # Copyright 2024-2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from collections import defaultdict
-
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -118,18 +116,6 @@ class AccountBilling(models.Model):
             groupby=["tax_group_id"],
         )
         return tax_amount_groups
-
-    def _group_invoice_lines_by_tax_group(self):
-        """Group invoice lines by tax, summing the subtotals for each tax type.
-        Returns a dictionary with tax as keys and subtotal as values.
-        """
-        self.ensure_one()
-        grouped_lines = defaultdict(float)
-        for bill_line in self.billing_line_ids:
-            for inv_line in bill_line.move_id.invoice_line_ids:
-                for tax_group in inv_line.tax_ids.tax_group_id:
-                    grouped_lines[tax_group] += inv_line.price_subtotal
-        return grouped_lines
 
     def _get_tax_differences(self, tax_summary, calculated_tax_summary):
         """Compare actual tax amounts from invoices with the expected tax amounts,
