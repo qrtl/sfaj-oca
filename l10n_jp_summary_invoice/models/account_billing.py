@@ -8,6 +8,8 @@ from odoo.exceptions import ValidationError
 class AccountBilling(models.Model):
     _inherit = "account.billing"
 
+    amount_untaxed = fields.Monetary(compute="_compute_amount")
+    amout_total = fields.Monetary(compute="_compute_amount")
     # Just changing the default value
     threshold_date_type = fields.Selection(default="invoice_date")
     date_due = fields.Date(
@@ -61,6 +63,13 @@ class AccountBilling(models.Model):
             billing.date_due = max(
                 move.invoice_date_due for move in billing.billing_line_ids.move_id
             )
+
+    def _compute_amount(self):
+        for rec in self:
+            invoices = rec.billing_line_ids.move_id
+            rec.amount_untaxed = sum(invoices.mapped("amount_untaxed"))
+            # FIXME: Use tax_totals instead of summing up the amount_total
+            rec.amout_total = sum(invoices.mapped("amount_total"))
 
     @api.depends_context("lang")
     @api.depends(

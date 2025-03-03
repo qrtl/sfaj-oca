@@ -147,7 +147,7 @@
                                 <tr class="border-black o_total">
                                     <td><strong>Total</strong></td>
                                     <td class="text-right">
-                                        <span t-field="o.total_amount" />
+                                        <span t-field="o.amout_total" />
                                     </td>
                                 </tr>
                             </h3>
