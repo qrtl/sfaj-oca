@@ -1,8 +1,9 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: '1.23'
+_commit: v1.29
 _src_path: https://github.com/OCA/oca-addons-repo-template.git
 ci: GitHub
 convert_readme_fragments_to_markdown: true
+enable_checklog_odoo: false
 generate_requirements_txt: true
 github_check_license: true
 github_ci_extra_env: {}
@@ -17,8 +18,8 @@ org_name: Odoo Community Association (OCA)
 org_slug: qrtl
 rebel_module_groups: []
 repo_description: ''
-repo_name: SFA OCA
-repo_slug: sfa-oca
+repo_name: SFAJ OCA
+repo_slug: sfaj-oca
 repo_website: ''
 use_pyproject_toml: false
 use_ruff: false

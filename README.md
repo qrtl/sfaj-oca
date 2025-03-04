@@ -1,13 +1,13 @@
 
 <!-- /!\ Non OCA Context : Set here the badge of your runbot / runboat instance. -->
-[![Pre-commit Status](https://github.com/qrtl/sfa-oca/actions/workflows/pre-commit.yml/badge.svg?branch=16.0)](https://github.com/qrtl/sfa-oca/actions/workflows/pre-commit.yml?query=branch%3A16.0)
-[![Build Status](https://github.com/qrtl/sfa-oca/actions/workflows/test.yml/badge.svg?branch=16.0)](https://github.com/qrtl/sfa-oca/actions/workflows/test.yml?query=branch%3A16.0)
-[![codecov](https://codecov.io/gh/qrtl/sfa-oca/branch/16.0/graph/badge.svg)](https://codecov.io/gh/qrtl/sfa-oca)
+[![Pre-commit Status](https://github.com/qrtl/sfaj-oca/actions/workflows/pre-commit.yml/badge.svg?branch=16.0)](https://github.com/qrtl/sfaj-oca/actions/workflows/pre-commit.yml?query=branch%3A16.0)
+[![Build Status](https://github.com/qrtl/sfaj-oca/actions/workflows/test.yml/badge.svg?branch=16.0)](https://github.com/qrtl/sfaj-oca/actions/workflows/test.yml?query=branch%3A16.0)
+[![codecov](https://codecov.io/gh/qrtl/sfaj-oca/branch/16.0/graph/badge.svg)](https://codecov.io/gh/qrtl/sfaj-oca)
 <!-- /!\ Non OCA Context : Set here the badge of your translation instance. -->
 
 <!-- /!\ do not modify above this line -->
 
-# SFA OCA
+# SFAJ OCA
 
 
 
