@@ -21,11 +21,10 @@
             <xpath expr="//notebook" position="inside">
                 <page
                     string="Tax Adjustment"
-                    attrs="{'invisible':[('bill_type','!=','out_invoice')]}"
+                    attrs="{'invisible':[('tax_adjustment_entry_id','=',False)]}"
                 >
                     <group>
                         <group>
-                            <field name="tax_entry_journal_id" />
                             <field name="tax_adjustment_entry_id" readonly="1" />
                         </group>
                     </group>

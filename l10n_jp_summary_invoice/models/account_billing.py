@@ -24,10 +24,6 @@ class AccountBilling(models.Model):
         exportable=False,
     )
     tax_adjustment_entry_id = fields.Many2one("account.move")
-    tax_entry_journal_id = fields.Many2one(
-        "account.journal",
-        help="This journal will be used for tax adjustment journal entry.",
-    )
     company_partner_id = fields.Many2one(related="company_id.partner_id", store=True)
     remit_to_bank_id = fields.Many2one(
         "res.partner.bank",

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-03 14:12+0000\n"
-"PO-Revision-Date: 2025-03-03 14:12+0000\n"
+"POT-Creation-Date: 2025-03-04 05:11+0000\n"
+"PO-Revision-Date: 2025-03-04 05:11+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -73,8 +73,7 @@ msgstr "すべての請求書が記帳済でなければ合計請求書は検証
 msgid ""
 "All invoices with date (threshold date type) before and equal to threshold "
 "date will be listed in billing lines"
-msgstr ""
-"閾日タイプの日付が閾日以前請求書が合計請求書明細行に追加されます。"
+msgstr "閾日タイプの日付が閾日以前請求書が合計請求書明細行に追加されます。"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.bill_line_section_layout
@@ -163,8 +162,7 @@ msgstr "選択がない場合は、会社に紐づく1つ目の銀行口座が�
 msgid ""
 "If selected, it means that this tax was auto-generated for rounding "
 "adjustment purposes."
-msgstr ""
-"選択されている場合、この税レコードは税額端数丸め調整のために自動生成されたものであることを示します。"
+msgstr "選択されている場合、この税レコードは税額端数丸め調整のために自動生成されたものであることを示します。"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_bank_statement_line__is_not_for_billing
@@ -286,11 +284,6 @@ msgid "Tax Adjustment Entry"
 msgstr "消費税調整仕訳"
 
 #. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__tax_entry_journal_id
-msgid "Tax Entry Journal"
-msgstr "消費税調整仕訳帳"
-
-#. module: l10n_jp_summary_invoice
 #: model:ir.model,name:l10n_jp_summary_invoice.model_account_tax_group
 msgid "Tax Group"
 msgstr "税グループ"
@@ -320,11 +313,6 @@ msgid ""
 "The total amount per invoice will appear in the summary invoice report if "
 "selected"
 msgstr "選択すると、各請求書の合計金額が合計請求書に表示されます"
-
-#. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_billing__tax_entry_journal_id
-msgid "This journal will be used for tax adjustment journal entry."
-msgstr "この仕訳帳は消費税調整仕訳に使用されます。"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__threshold_date_type
