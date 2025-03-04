@@ -28,6 +28,9 @@ class AccountBilling(models.Model):
     remit_to_bank_id = fields.Many2one(
         "res.partner.bank",
         "Remit-to Bank",
+        compute="_compute_remit_to_bank_id",
+        store=True,
+        readonly=False,
         domain="[('partner_id', '=', company_partner_id)]",
         help="If not specified, the first bank account linked to the company will show "
         "in the report.",
@@ -57,6 +60,11 @@ class AccountBilling(models.Model):
             billing.date_due = max(
                 move.invoice_date_due for move in billing.billing_line_ids.move_id
             )
+
+    @api.depends("partner_id")
+    def _compute_remit_to_bank_id(self):
+        for rec in self:
+            rec.remit_to_bank_id = rec.company_id.partner_id.bank_ids[:1]
 
     @api.depends_context("lang")
     @api.depends(

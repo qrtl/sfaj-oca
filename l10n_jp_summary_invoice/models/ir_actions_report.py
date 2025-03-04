@@ -8,11 +8,6 @@ class Report(models.Model):
     _inherit = "ir.actions.report"
 
     def _get_remit_to_bank(self, record):
-        res = super()._get_remit_to_bank(record)
-        if (
-            not res
-            or not record._name == "account.billing"
-            or not record.remit_to_bank_id
-        ):
-            return res
-        return record.remit_to_bank_id
+        if record._name == "account.billing":
+            return record.remit_to_bank_id
+        return super()._get_remit_to_bank(record)
