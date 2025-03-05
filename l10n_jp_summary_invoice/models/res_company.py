@@ -9,6 +9,7 @@ class ResCompany(models.Model):
 
     summary_invoice_remark = fields.Html(
         translate=True,
+        default="下記の通り御請求申し上げます。",
         help="Content here will be displayed in the summary invoice report.",
     )
     show_sale_order_number = fields.Boolean(

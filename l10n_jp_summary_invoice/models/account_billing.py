@@ -171,6 +171,7 @@ class AccountBilling(models.Model):
             if not tax_group_diff_dict:
                 continue
             invoice_vals = {
+                "move_type": "out_invoice",
                 "partner_id": rec.partner_id.id,
                 "date": rec.date,
                 "invoice_origin": rec.name,
@@ -195,11 +196,11 @@ class AccountBilling(models.Model):
                     )
                 )
                 diff_balance += diff
-                invoice_vals["move_type"] = (
-                    "out_invoice" if diff_balance >= 0 else "out_refund"
-                )
-            rec.tax_adjustment_entry_id = self.env["account.move"].create(invoice_vals)
-            rec.tax_adjustment_entry_id.action_post()
+            adjustment_move = self.env["account.move"].create(invoice_vals)
+            if diff_balance < 0:
+                adjustment_move.action_switch_invoice_into_refund_credit_note()
+            adjustment_move.action_post()
+            rec.tax_adjustment_entry_id = adjustment_move
         return res
 
     def action_cancel(self):
