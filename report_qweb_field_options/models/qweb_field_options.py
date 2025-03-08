@@ -88,3 +88,10 @@ class QwebFieldOptions(models.Model):
             else:
                 return -1
         return score
+
+    @api.model
+    def _get_options_rec(self, record, field_name):
+        options_recs = self.env["qweb.field.options"].search(
+            [("res_model_name", "=", record._name), ("field_name", "=", field_name)]
+        )
+        return max(options_recs, default=None, key=lambda r: r._get_score(record))

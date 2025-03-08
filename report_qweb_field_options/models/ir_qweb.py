@@ -21,10 +21,9 @@ class IrQweb(models.AbstractModel):
             return super()._get_field(
                 record, field_name, expression, tagName, field_options, values
             )
-        qweb_recs = self.env["qweb.field.options"].search(
-            [("res_model_name", "=", record._name), ("field_name", "=", field_name)]
+        options_rec = self.env["qweb.field.options"]._get_options_rec(
+            record, field_name
         )
-        options_rec = max(qweb_recs, default=None, key=lambda r: r._get_score(record))
         if options_rec and options_rec.field_options:
             try:
                 extra_options = ast.literal_eval(options_rec.field_options)
