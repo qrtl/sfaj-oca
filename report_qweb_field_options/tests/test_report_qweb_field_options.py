@@ -4,7 +4,7 @@
 from odoo.tests.common import TransactionCase
 
 
-class TestQwebFieldConverter(TransactionCase):
+class TestQwebFieldOptions(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -13,8 +13,8 @@ class TestQwebFieldConverter(TransactionCase):
         cls.test_currency = cls.env["res.currency"].create(
             {"name": "Test Currency", "symbol": "T", "rounding": 0.01}
         )
-        # Create a test qweb field converter record
-        cls.dp_qweb_rec = cls.env["qweb.field.converter"].create(
+        # Create a test qweb field options record
+        cls.dp_qweb_rec = cls.env["qweb.field.options"].create(
             {
                 "res_model_id": cls.env.ref("base.model_res_currency").id,
                 "field_id": cls.env["ir.model.fields"]

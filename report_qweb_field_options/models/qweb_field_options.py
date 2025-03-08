@@ -7,9 +7,9 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class QwebFieldConverter(models.Model):
-    _name = "qweb.field.converter"
-    _description = "Qweb Field Converter"
+class QwebFieldOptions(models.Model):
+    _name = "qweb.field.options"
+    _description = "Qweb Field Options"
     _order = "res_model_id, field_id"
 
     res_model_id = fields.Many2one(

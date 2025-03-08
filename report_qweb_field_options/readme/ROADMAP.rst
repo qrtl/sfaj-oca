@@ -1,4 +1,4 @@
-Assigning Options in a QWeb Field Converter record can cause UI issues if a field is
+Assigning Options in a QWeb Field Options record can cause UI issues if a field is
 defined twice with different widgets in a view.
 
 For example, adding ``{"widget": "date"}`` to the date_approve field in a purchase order

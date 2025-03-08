@@ -1,4 +1,4 @@
-Go to *Settings > Technical > Reporting > Qweb Field Converter*, and create records
+Go to *Settings > Technical > Reporting > Qweb Field Options*, and create records
 according to your needs.
 
 For each record:
