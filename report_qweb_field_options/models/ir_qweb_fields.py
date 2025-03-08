@@ -10,12 +10,12 @@ class FloatConverter(models.AbstractModel):
     @api.model
     def record_to_html(self, record, field_name, options):
         if "precision" not in options and "decimal_precision" not in options:
-            qweb_recs = self.env["qweb.field.options"].search(
+            options_recs = self.env["qweb.field.options"].search(
                 [("res_model_name", "=", record._name), ("field_name", "=", field_name)]
             )
-            precision_rec = max(
-                qweb_recs, default=None, key=lambda r: r._get_score(record)
+            options_rec = max(
+                options_recs, default=None, key=lambda r: r._get_score(record)
             )
-            if precision_rec:
-                options = dict(options, precision=precision_rec.digits)
+            if options_rec:
+                options = dict(options, precision=options_rec.digits)
         return super().record_to_html(record, field_name, options)
