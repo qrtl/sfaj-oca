@@ -28,15 +28,15 @@
                     name="currency_field_id"
                     attrs="{'readonly':[('currency_id','=',False)],'required':[('currency_id','!=',False)]}"
                 />
-                <field name="field_options" />
                 <field
                     name="company_id"
                     groups="base.group_multi_company"
                     optional="show"
                 />
+                <field name="field_options" />
                 <field
                     name="digits"
-                    attrs="{'required':[('field_type','=', 'float')], 'readonly':[('field_type','!=', 'float')]}"
+                    attrs="{'readonly':[('field_type','!=', 'float')]}"
                 />
             </tree>
         </field>

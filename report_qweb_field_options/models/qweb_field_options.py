@@ -2,9 +2,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import ast
+import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class QwebFieldOptions(models.Model):
@@ -23,7 +26,7 @@ class QwebFieldOptions(models.Model):
         ondelete="cascade",
         required=True,
     )
-    field_type = fields.Selection(related="field_id.ttype", store=True)
+    field_type = fields.Selection(related="field_id.ttype")
     field_name = fields.Char("Field Name", related="field_id.name", store=True)
     uom_id = fields.Many2one("uom.uom", string="UoM", ondelete="cascade")
     uom_field_id = fields.Many2one(
@@ -53,6 +56,8 @@ class QwebFieldOptions(models.Model):
     @api.constrains("field_options")
     def _check_field_options_format(self):
         for rec in self:
+            if not rec.field_options:
+                continue
             field_options = False
             try:
                 field_options = ast.literal_eval(rec.field_options)
@@ -89,9 +94,24 @@ class QwebFieldOptions(models.Model):
                 return -1
         return score
 
-    @api.model
-    def _get_options_rec(self, record, field_name):
-        options_recs = self.env["qweb.field.options"].search(
-            [("res_model_name", "=", record._name), ("field_name", "=", field_name)]
-        )
-        return max(options_recs, default=None, key=lambda r: r._get_score(record))
+    def _update_field_options(self, record, field_options):
+        self.ensure_one()
+        if self.field_options:
+            try:
+                extra_options = ast.literal_eval(self.field_options)
+                if extra_options.get("widget") == "monetary":
+                    extra_options["display_currency"] = (
+                        self.currency_id
+                        or hasattr(record, "company_id")
+                        and record.company_id.currency_id
+                        or self.env.company.currency_id
+                    )
+                field_options.update(extra_options)
+            except Exception as e:
+                _logger.error(
+                    "Failed to parse field options as a dictionary: "
+                    f"{self.field_options}. Error: {e}"
+                )
+        elif self.field_type == "float":
+            field_options["precision"] = self.digits
+        return field_options
