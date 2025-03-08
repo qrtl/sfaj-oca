@@ -1,7 +1,10 @@
-# Copyright 2024 Quartile Limited (https://www.quartile.com)
+# Copyright 2024-2025 Quartile (https://www.quartile.com)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+import ast
+
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class QwebFieldConverter(models.Model):
@@ -36,11 +39,35 @@ class QwebFieldConverter(models.Model):
         string="Currency Field",
         ondelete="cascade",
     )
-    field_options = fields.Text(
-        "Options", help="JSON-formatted string to specify field formatting options"
+    field_options = fields.Char(
+        "Options",
+        help="A string representation of a dictionary to specify field formatting "
+        "options. Examples:\n"
+        "{'widget': 'date'}\n"
+        "{'widget': 'monetary'}\n"
+        "{'widget': 'contact', 'fields': ['name', 'phone']}.",
     )
     digits = fields.Integer()
     company_id = fields.Many2one("res.company", string="Company")
+
+    @api.constrains("field_options")
+    def _check_field_options_format(self):
+        for rec in self:
+            field_options = False
+            try:
+                field_options = ast.literal_eval(rec.field_options)
+            except Exception as e:
+                raise ValidationError(
+                    _(
+                        "Invalid string for the Options field: %(field_options)s.\n"
+                        "Error: %(error)s"
+                    )
+                    % {"field_options": rec.field_options, "error": e}
+                ) from e
+            if not isinstance(field_options, dict):
+                raise ValidationError(
+                    _("Options must be a dictionary, but got %s") % type(field_options)
+                )
 
     def _get_score(self, record):
         self.ensure_one()

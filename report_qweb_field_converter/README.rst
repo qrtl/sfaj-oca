@@ -25,9 +25,9 @@ Report Qweb Field Converter
 
 |badge1| |badge2| |badge3| |badge4| |badge5| 
 
-This module allows administrators to define the decimal precision of float fields and to
-add option values for fields (e.g., adding a date widget option for datetime fields) for
-QWeb report presentation.
+This module allows administrators to define the decimal precision of float fields and
+add option values to fields (e.g., adding a date widget option to datetime fields) for
+QWeb report and view presentation.
 
 **Table of contents**
 
@@ -37,17 +37,18 @@ QWeb report presentation.
 Configuration
 =============
 
-Go to Settings > Technical > Reporting > Qweb Field Converter, and create records
+Go to *Settings > Technical > Reporting > Qweb Field Converter*, and create records
 according to your needs.
 
 For each record:
 
-- choose a model and a field (required)
-- set UoM and UoM Field, or Currency and Currency Field for only float-type field
-  (optional)
-- Set options: Add the options for your fields in JSON format (e.g. {"widget": "date"}).
-- set Company (optional)
-- set Digits (required for only float-type field)
+- Set **Model** and **Field** (required)
+- Set **UoM** and **UoM Field**, or **Currency** and **Currency Field** only for fields
+  of float type (optional)
+- Set **Options** as a string representation of a dictionary (e.g., ``{"widget": "date"}``,
+  ``{"widget": "monetary"}``, or ``{'widget': 'contact', 'fields': ['name', 'phone']}``)
+- Set **Company** (optional)
+- Set **Digits** (required only for float-type fields)
 
 Usage
 =====
@@ -56,8 +57,20 @@ Print a QWeb report (quotation, invoice, purchase order, etc.), and the value
 presentation for fields like line quantity, price unit and date order are adjusted
 according to the Qweb Field Converter configuration.
 
-Note that among matching config records, the one with the strictest condition will be
-adopted.
+Note that among matching configuration records, the one with the strictest condition will be
+applied.
+
+Known issues / Roadmap
+======================
+
+Assigning Options in a QWeb Field Converter record can cause UI issues if a field is
+defined twice with different widgets in a view.
+
+For example, adding ``{"widget": "date"}`` to the date_approve field in a purchase order
+can result in two dates appearing under the Confirmation Date column in the portal view.
+This occurs because the field is defined twice with different widgets.
+
+Reference: https://github.com/odoo/odoo/blob/5eec379/addons/purchase/views/portal_templates.xml#L101-L102
 
 Bug Tracker
 ===========
@@ -75,14 +88,15 @@ Credits
 Authors
 ~~~~~~~
 
-* Quartile Limited
+* Quartile
 
 Contributors
 ~~~~~~~~~~~~
 
-- [Quartile Limited](https://www.quartile.co):
-  - Yoshi Tashiro
-  - Aung Ko Ko Lin
+* `Quartile <https://www.quartile.co>`_:
+
+  * Yoshi Tashiro
+  * Aung Ko Ko Lin
 
 Maintainers
 ~~~~~~~~~~~

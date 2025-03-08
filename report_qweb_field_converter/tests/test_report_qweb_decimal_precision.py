@@ -1,4 +1,4 @@
-# Copyright 2024 Quartile Limited (https://www.quartile.com)
+# Copyright 2024 Quartile (https://www.quartile.com)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo.tests.common import TransactionCase
