@@ -1,4 +1,4 @@
-# Copyright 2024-2025 Quartile (https://www.quartile.com)
+# Copyright 2024-2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import ast
@@ -48,7 +48,7 @@ class QwebFieldOptions(models.Model):
         "options. Examples:\n"
         "{'widget': 'date'}\n"
         "{'widget': 'monetary'}\n"
-        "{'widget': 'contact', 'fields': ['name', 'phone']}.",
+        "{'widget': 'contact', 'fields': ['name', 'phone']}",
     )
     digits = fields.Integer()
     company_id = fields.Many2one("res.company", string="Company")
@@ -77,11 +77,10 @@ class QwebFieldOptions(models.Model):
     def _get_score(self, record):
         self.ensure_one()
         score = 1
+        # Just increment the score as the record already matches the company_id,
+        # which has been filtered prior to calling this method.
         if self.company_id:
-            if record.company_id == self.company_id:
-                score += 1
-            else:
-                return -1
+            score += 1
         if self.uom_id:
             if record[self.uom_field_id.sudo().name] == self.uom_id:
                 score += 1

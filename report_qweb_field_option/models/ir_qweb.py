@@ -1,4 +1,4 @@
-# Copyright 2024-2025 Quartile (https://www.quartile.com)
+# Copyright 2024-2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, models
@@ -12,8 +12,15 @@ class IrQweb(models.AbstractModel):
         self, record, field_name, expression, tagName, field_options, values
     ):
         if values.get("report_type") == "pdf":
+            company = getattr(record, "company_id", False) or self.env.company
             options_recs = self.env["qweb.field.options"].search(
-                [("res_model_name", "=", record._name), ("field_name", "=", field_name)]
+                [
+                    ("res_model_name", "=", record._name),
+                    ("field_name", "=", field_name),
+                    "|",
+                    ("company_id", "=", company.id),
+                    ("company_id", "=", False),
+                ]
             )
             if options_recs:
                 options_rec = max(

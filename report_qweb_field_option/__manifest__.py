@@ -1,7 +1,7 @@
-# Copyright 2024-2025 Quartile (https://www.quartile.com)
+# Copyright 2024-2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
-    "name": "Report Qweb Field Options",
+    "name": "Report Qweb Field Option",
     "version": "16.0.1.0.0",
     "category": "Technical Settings",
     "license": "AGPL-3",
