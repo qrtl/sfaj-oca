@@ -9,13 +9,14 @@ class SaleOrder(models.Model):
 
     def _get_picking_for_actual_date(self):
         self.ensure_one()
-        complete_pickings = self.picking_ids.filtered(
-            lambda p: p.state == "done"
-        ).sorted("date_done")
-        return complete_pickings[-1] if complete_pickings else False
+        return self.picking_ids.filtered(lambda p: p.state == "done").sorted(
+            key=lambda p: p.date_done, reverse=True
+        )[:1]
 
     def _prepare_invoice(self):
         invoice_vals = super()._prepare_invoice()
+        if not self.company_id.use_actual_date_for_invoice:
+            return invoice_vals
         picking = self._get_picking_for_actual_date()
         if picking:
             if picking.actual_date:

@@ -19,6 +19,7 @@ class TestInvoiceDateFromPickingActualDate(TransactionCase):
                 "list_price": 100.0,
             }
         )
+        cls.env.company.use_actual_date_for_invoice = True
 
     def _create_sale_order(self, partner, product, quantity=1):
         order = self.env["sale.order"].create(
@@ -43,16 +44,11 @@ class TestInvoiceDateFromPickingActualDate(TransactionCase):
         picking.action_assign()
         picking.button_validate()
 
-    def _create_invoice(self, order):
-        invoice = order._create_invoices()
-        invoice.action_post()
-        return invoice
-
     def test_invoice_date_matches_date_done(self):
         order = self._create_sale_order(self.partner, self.product)
         picking = order.picking_ids[0]
         self._validate_picking(picking)
-        invoice = self._create_invoice(order)
+        invoice = order._create_invoices()
         picking_date = fields.Datetime.context_timestamp(
             order.with_context(tz=order.company_id.partner_id.tz), picking.date_done
         ).date()
@@ -68,7 +64,7 @@ class TestInvoiceDateFromPickingActualDate(TransactionCase):
         actual_date = (datetime.now() - timedelta(days=2)).date()
         picking.write({"actual_date": actual_date})
         self._validate_picking(picking)
-        invoice = self._create_invoice(order)
+        invoice = order._create_invoices()
         self.assertEqual(
             invoice.invoice_date,
             actual_date,

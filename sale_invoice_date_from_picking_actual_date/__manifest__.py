@@ -8,5 +8,6 @@
     "author": "Quartile,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/account-invoicing",
     "depends": ["sale_stock", "stock_move_actual_date"],
+    "data": ["views/res_config_settings_views.xml"],
     "installable": True,
 }
