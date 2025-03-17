@@ -7,6 +7,6 @@
     "license": "AGPL-3",
     "author": "Quartile,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/account-invoicing",
-    "depends": ["sale", "stock_move_actual_date"],
+    "depends": ["sale_stock", "stock_move_actual_date"],
     "installable": True,
 }
