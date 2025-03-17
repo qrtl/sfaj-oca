@@ -19,7 +19,7 @@ class TestInvoiceDateFromPickingActualDate(TransactionCase):
                 "list_price": 100.0,
             }
         )
-        cls.env.company.use_actual_date_for_invoice = True
+        cls.env.company.use_picking_actual_date_for_invoice = True
 
     def _create_sale_order(self, partner, product, quantity=1):
         order = self.env["sale.order"].create(

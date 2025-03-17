@@ -8,10 +8,10 @@
             <xpath expr="//div[@id='proforma_configuration']" position="after">
                 <div class="col-12 col-lg-6 o_setting_box">
                     <div class="o_setting_left_pane">
-                        <field name="use_actual_date_for_invoice" />
+                        <field name="use_picking_actual_date_for_invoice" />
                     </div>
                     <div class="o_setting_right_pane">
-                        <label for="use_actual_date_for_invoice" />
+                        <label for="use_picking_actual_date_for_invoice" />
                         <div class="text-muted">
                             Set the invoice date based on the actual date of the last completed picking associated with the sales order.
                         </div>

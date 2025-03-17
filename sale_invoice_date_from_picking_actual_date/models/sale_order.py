@@ -15,7 +15,7 @@ class SaleOrder(models.Model):
 
     def _prepare_invoice(self):
         invoice_vals = super()._prepare_invoice()
-        if not self.company_id.use_actual_date_for_invoice:
+        if not self.company_id.use_picking_actual_date_for_invoice:
             return invoice_vals
         picking = self._get_picking_for_actual_date()
         if picking:

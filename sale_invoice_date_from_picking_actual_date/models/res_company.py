@@ -7,4 +7,4 @@ from odoo import fields, models
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    use_actual_date_for_invoice = fields.Boolean()
+    use_picking_actual_date_for_invoice = fields.Boolean()

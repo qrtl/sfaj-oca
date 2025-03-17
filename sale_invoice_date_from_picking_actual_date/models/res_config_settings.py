@@ -7,7 +7,7 @@ from odoo import fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
-    use_actual_date_for_invoice = fields.Boolean(
-        related="company_id.use_actual_date_for_invoice",
+    use_picking_actual_date_for_invoice = fields.Boolean(
+        related="company_id.use_picking_actual_date_for_invoice",
         readonly=False,
     )
