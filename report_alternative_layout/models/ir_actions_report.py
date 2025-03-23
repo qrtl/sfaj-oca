@@ -32,10 +32,30 @@ class Report(models.Model):
             return partner.commercial_partner_id
         return partner
 
+    def _get_bank_field(self, record):
+        """Get the field that links the record to the bank account.
+
+        We assume that there is usually just one field in the model with many2one
+        relationship to res.partner.bank. In case of an exception, this method should be
+        extended in the specific model to identify the correct field.
+        """
+        self.ensure_one()
+        return self.env["ir.model.fields"].search(
+            [
+                ("model", "=", record._name),
+                ("ttype", "=", "many2one"),
+                ("relation", "=", "res.partner.bank"),
+            ],
+            limit=1,
+        )
+
     def _get_remit_to_bank(self, record):
         self.ensure_one()
         if not self.show_remit_to_bank:
             return False
+        bank_field = self._get_bank_field(record)
+        if bank_field:
+            return getattr(record, bank_field.name)
         if "company_id" not in record._fields:
             return False
         company = record.company_id
