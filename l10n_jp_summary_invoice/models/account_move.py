@@ -12,6 +12,16 @@ class AccountMove(models.Model):
         help="If selected, the invoice is excluded from the billing process.",
     )
 
+    def _get_partner_bank(self):
+        partner_banks = self.mapped("partner_bank_id")
+        if len(partner_banks) > 1:
+            raise UserError(_("Please select invoices with the same recipient bank."))
+        return partner_banks
+
+    def action_create_billing(self):
+        self._get_partner_bank()
+        return super().action_create_billing()
+
     # TODO: Propose to move this to account_billing?
     def button_draft(self):
         for rec in self:
