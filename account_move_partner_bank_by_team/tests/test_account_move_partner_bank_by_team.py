@@ -41,7 +41,6 @@ class TestPartnerBankSelection(TransactionCase):
             }
         )
         self.assertEqual(move.partner_bank_id, self.crm_team_bank)
-
         self.sales_team.bank_account_id = False
         move = self.env["account.move"].create(
             {

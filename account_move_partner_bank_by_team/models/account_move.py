@@ -11,6 +11,6 @@ class AccountMove(models.Model):
     def _compute_partner_bank_id(self):
         super()._compute_partner_bank_id()
         for move in self:
-            if move.team_id and move.team_id.bank_account_id:
+            if move.team_id.bank_account_id:
                 move.partner_bank_id = move.team_id.bank_account_id
         return

@@ -5,7 +5,6 @@
         <field name="inherit_id" ref="sales_team.crm_team_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="company_partner_id" invisible="1" />
                 <field name="bank_account_id" />
             </xpath>
         </field>

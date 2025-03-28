@@ -7,9 +7,8 @@ from odoo import fields, models
 class SalesTeam(models.Model):
     _inherit = "crm.team"
 
-    company_partner_id = fields.Many2one(related="company_id.partner_id")
     bank_account_id = fields.Many2one(
         "res.partner.bank",
-        domain="[('partner_id', '=', company_partner_id)]",
+        domain="[('partner_id', 'in', member_company_ids)]",
         help="Select a bank account belonging to the company's partner",
     )
