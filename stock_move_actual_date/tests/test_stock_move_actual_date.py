@@ -5,6 +5,7 @@ from datetime import date
 
 from freezegun import freeze_time
 
+from odoo import Command
 from odoo.tests.common import TransactionCase
 
 
@@ -26,6 +27,14 @@ class TestStockMoveActualDate(TransactionCase):
                 "type": "product",
                 "categ_id": product_category.id,
                 "standard_price": 100.0,
+            }
+        )
+        cls.product_2 = cls.env["product.product"].create(
+            {
+                "name": "Test Product 2",
+                "type": "product",
+                "categ_id": product_category.id,
+                "standard_price": 0.0,
             }
         )
         cls.supplier_location = cls.env.ref("stock.stock_location_suppliers")
@@ -52,15 +61,13 @@ class TestStockMoveActualDate(TransactionCase):
                 "product_uom_qty": 10.0,
                 "price_unit": 10,
                 "move_line_ids": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "product_id": self.product_1.id,
                             "location_id": self.supplier_location.id,
                             "location_dest_id": self.stock_location.id,
                             "qty_done": 10.0,
-                        },
+                        }
                     )
                 ],
             }
@@ -111,6 +118,23 @@ class TestStockMoveActualDate(TransactionCase):
         )
         self.assertEqual(move.actual_date, date(2024, 7, 1))
         self.assertEqual(move.account_move_ids.date, date(2024, 7, 1))
+
+    def test_inventory_adjustment_actual_date_with_zero_standard_price(self):
+        quant = self.env["stock.quant"].create(
+            {
+                "location_id": self.stock_location.id,
+                "product_id": self.product_2.id,
+                "inventory_quantity": 10,
+                "accounting_date": date(2025, 3, 1),
+            }
+        )
+        quant.action_apply_inventory()
+        move = self.env["stock.move"].search(
+            [("product_id", "=", self.product_2.id), ("is_inventory", "=", True)],
+            limit=1,
+        )
+        self.assertEqual(move.actual_date, date(2025, 3, 1))
+        self.assertFalse(move.account_move_ids)
 
     @freeze_time("2024-09-20 23:00:00")
     def test_stock_move_without_actual_date_from_picking_or_scrap(self):
