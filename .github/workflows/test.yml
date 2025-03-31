@@ -36,6 +36,12 @@ jobs:
       matrix:
         include:
           - container: ghcr.io/oca/oca-ci/py3.10-ocb16.0:latest
+            # auditlog: incompatible with sales_team_security (for some reason)
+            include: "auditlog"
+            name: test with OCB
+            makepot: "false"
+          - container: ghcr.io/oca/oca-ci/py3.10-ocb16.0:latest
+            exclude: "auditlog"
             name: test with OCB
             makepot: "false"
     services:
