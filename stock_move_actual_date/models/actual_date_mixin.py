@@ -66,7 +66,7 @@ class ActualDateMixin(models.AbstractModel):
             for rec in self:
                 moves = rec._get_stock_moves()
                 moves.write({"actual_date_source": rec.actual_date})
-                if rec.state not in self._get_done_state():
+                if rec.state not in self._get_done_state() or "actual_date" not in vals:
                     continue
                 account_moves = moves.account_move_ids
                 if not account_moves:
