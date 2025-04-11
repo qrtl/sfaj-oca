@@ -28,7 +28,7 @@ class ActualDateMixin(models.AbstractModel):
         """
         return False
 
-    def _get_trigger_field_for_actual_date_source(self):
+    def _get_trigger_field_name_for_actual_date_source(self):
         """Return the field name that triggers actual_date_source assignment.
         Can be overridden in specific models, e.g., 'date_done' for stock.picking.
         """
@@ -57,11 +57,11 @@ class ActualDateMixin(models.AbstractModel):
     def write(self, vals):
         res = super().write(vals)
         move_field_name = self._get_stock_move_field_name()
-        trigger_field = self._get_trigger_field_for_actual_date_source()
+        trigger_field_name = self._get_trigger_field_name_for_actual_date_source()
         if (
             "actual_date" in vals
             or (move_field_name and move_field_name in vals)
-            or (trigger_field and trigger_field in vals)
+            or (trigger_field_name and trigger_field_name in vals)
         ):
             for rec in self:
                 moves = rec._get_stock_moves()
