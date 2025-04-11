@@ -11,6 +11,9 @@ class StockPicking(models.Model):
     def _get_stock_move_field_name(self):
         return "move_ids"
 
+    def _get_trigger_field_for_actual_date_source(self):
+        return "date_done"
+
     def _get_stock_moves(self):
         self.ensure_one()
         return self.move_ids

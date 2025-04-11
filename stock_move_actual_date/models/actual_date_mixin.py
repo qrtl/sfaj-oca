@@ -28,6 +28,12 @@ class ActualDateMixin(models.AbstractModel):
         """
         return False
 
+    def _get_trigger_field_for_actual_date_source(self):
+        """Return the field name that triggers actual_date_source assignment.
+        Can be overridden in specific models, e.g., 'date_done' for stock.picking.
+        """
+        return "False"
+
     def _get_stock_moves(self):
         """This method should be overridden in the specific model to return related moves."""
         self.ensure_one()
@@ -51,13 +57,11 @@ class ActualDateMixin(models.AbstractModel):
     def write(self, vals):
         res = super().write(vals)
         move_field_name = self._get_stock_move_field_name()
-        # Add date_done in the condition to handle pickings with actual_date
-        # that are validated after this PR (https://github.com/qrtl/axls-oca/pull/182),
-        # when they were not in 'done' state before applying the changes.
+        trigger_field = self._get_trigger_field_for_actual_date_source()
         if (
             "actual_date" in vals
             or (move_field_name and move_field_name in vals)
-            or "date_done" in vals
+            or (trigger_field and trigger_field in vals)
         ):
             for rec in self:
                 moves = rec._get_stock_moves()
