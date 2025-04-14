@@ -16,13 +16,14 @@ class ActualDateMixin(models.AbstractModel):
         compute="_compute_is_editable_actual_date", string="Is Editable"
     )
 
-    def _get_trigger_field_names_for_actual_date_source(self):
-        """Return a list of field names that trigger actual_date_source assignment.
+    def _get_actual_date_update_triggers(self):
+        """Return a list of field names that trigger actual_date_source assignment
+        for stock moves.
 
-        Should be overridden in specific models to return relevant fields.
-        Example: ['date_done', 'move_ids'] for stock.picking.
+        Should be extended in specific models to return relevant fields.
+        Example: Append 'date_done' and 'move_ids' for stock.picking.
         """
-        return []
+        return ["actual_date"]
 
     def _get_stock_moves(self):
         """This method should be overridden in the specific model to return related moves."""
@@ -46,8 +47,7 @@ class ActualDateMixin(models.AbstractModel):
 
     def write(self, vals):
         res = super().write(vals)
-        trigger_field_names = self._get_trigger_field_names_for_actual_date_source()
-        if any(name in vals for name in (trigger_field_names + ["actual_date"])):
+        if any(field in vals for field in self._get_actual_date_update_triggers()):
             for rec in self:
                 moves = rec._get_stock_moves()
                 moves.write({"actual_date_source": rec.actual_date})
