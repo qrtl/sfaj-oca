@@ -8,11 +8,8 @@ class StockPicking(models.Model):
     _name = "stock.picking"
     _inherit = ["stock.picking", "actual.date.mixin"]
 
-    def _get_stock_move_field_name(self):
-        return "move_ids"
-
-    def _get_trigger_field_name_for_actual_date_source(self):
-        return "date_done"
+    def _get_trigger_field_names_for_actual_date_source(self):
+        return ["date_done", "move_ids"]
 
     def _get_stock_moves(self):
         self.ensure_one()

@@ -16,23 +16,13 @@ class ActualDateMixin(models.AbstractModel):
         compute="_compute_is_editable_actual_date", string="Is Editable"
     )
 
-    def _get_stock_move_field_name(self):
-        """Return the field name that stores related stock moves.
+    def _get_trigger_field_names_for_actual_date_source(self):
+        """Return a list of field names that trigger actual_date_source assignment.
 
-        This method should be overridden in the specific model to return
-        the corresponding One2many field name that links
-        to stock.move records.
-
-        Returns:
-            str: The technical field name as a string, or False if not applicable.
+        Should be overridden in specific models to return relevant fields.
+        Example: ['date_done', 'move_ids'] for stock.picking.
         """
-        return False
-
-    def _get_trigger_field_name_for_actual_date_source(self):
-        """Return the field name that triggers actual_date_source assignment.
-        Can be overridden in specific models, e.g., 'date_done' for stock.picking.
-        """
-        return "False"
+        return []
 
     def _get_stock_moves(self):
         """This method should be overridden in the specific model to return related moves."""
@@ -56,13 +46,8 @@ class ActualDateMixin(models.AbstractModel):
 
     def write(self, vals):
         res = super().write(vals)
-        move_field_name = self._get_stock_move_field_name()
-        trigger_field_name = self._get_trigger_field_name_for_actual_date_source()
-        if (
-            "actual_date" in vals
-            or (move_field_name and move_field_name in vals)
-            or (trigger_field_name and trigger_field_name in vals)
-        ):
+        trigger_field_names = self._get_trigger_field_names_for_actual_date_source()
+        if any(name in vals for name in (trigger_field_names + ["actual_date"])):
             for rec in self:
                 moves = rec._get_stock_moves()
                 moves.write({"actual_date_source": rec.actual_date})
