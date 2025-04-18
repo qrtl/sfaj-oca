@@ -108,7 +108,7 @@ class TestSummaryInvoice(TransactionCase):
         moves = billing._get_moves()
         self.assertNotIn(billed_invoice.id, moves.ids)
 
-    def test_action_cancel_resets_adjustment(self):
+    def test_create_tax_adjustment_entry(self):
         inv_1_15 = self._create_invoice(200.5, self.tax_15)
         inv_2_15 = self._create_invoice(100.5, self.tax_15)
         invoices = inv_1_15 + inv_2_15
