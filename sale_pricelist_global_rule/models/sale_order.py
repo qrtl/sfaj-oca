@@ -45,7 +45,7 @@ class SaleOrder(models.Model):
             pricelist = sale.pricelist_id.with_context(
                 pricelist_global_cummulative_quantity=qty_data
             )
-            suitable_rule = self.env["product.pricelist.item"]
+            global_rule = self.env["product.pricelist.item"]
             for line in sale.order_line:
                 suitable_rule = pricelist._get_product_rule(
                     line.product_id,
@@ -53,9 +53,16 @@ class SaleOrder(models.Model):
                     uom=line.product_uom,
                     date=line.order_id.date_order,
                 )
-                if suitable_rule:
+                if not suitable_rule:
+                    continue
+                rule = global_rule.browse(suitable_rule)
+                if rule.applied_on in [
+                    "3_1_global_product_template",
+                    "3_2_global_product_category",
+                ]:
+                    global_rule = rule
                     break
-            sale.has_pricelist_global = bool(suitable_rule)
+            sale.has_pricelist_global = bool(global_rule)
 
     @api.onchange("order_line")
     def _onchange_need_recompute_pricelist_global(self):
