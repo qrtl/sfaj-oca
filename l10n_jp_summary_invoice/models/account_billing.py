@@ -107,6 +107,7 @@ class AccountBilling(models.Model):
             if not rec.remit_to_bank_id:
                 rec.remit_to_bank_id = rec.billing_line_ids[:1].move_id.partner_bank_id
 
+    @api.model_create_multi
     def create(self, vals_list):
         billings = super().create(vals_list)
         billings._update_remit_to_bank_id()
