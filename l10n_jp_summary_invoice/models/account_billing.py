@@ -151,19 +151,6 @@ class AccountBilling(models.Model):
         )
         return tax_amount_groups
 
-    def _get_tax_differences(self, tax_summary, calculated_tax_summary):
-        """Compare actual tax amounts from invoices with the expected tax amounts,
-        and return the differences for each tax.
-        """
-        self.ensure_one()
-        tax_differences = {}
-        for tax, amount in tax_summary.items():
-            summary_tax_amount = calculated_tax_summary.get(tax, 0)
-            tax_diff = summary_tax_amount - amount
-            if tax_diff != 0:
-                tax_differences[tax] = tax_diff
-        return tax_differences
-
     def _get_inv_line_account_id(self):
         self.ensure_one()
         return self.env["account.account"]._get_most_frequent_account_for_partner(
@@ -180,13 +167,14 @@ class AccountBilling(models.Model):
                     _("All invoices must be posted before validating the billing.")
                 )
         res = super().validate_billing()
+        # Tax journal entry will be created only for customer invoice billings.
         for rec in self.filtered(lambda x: x.bill_type == "out_invoice"):
             tax_totals = rec.tax_totals
             groups_by_subtotal = tax_totals.get("groups_by_subtotal", {})
             key = next(iter(groups_by_subtotal))
-            sign = -1 if rec.bill_type == "out_invoice" else 1
+
             tax_group_amount_dict = {
-                entry["tax_group_id"]: entry["tax_group_amount"] * sign
+                entry["tax_group_id"]: entry["tax_group_amount"] * -1
                 for entry in groups_by_subtotal[key]
             }
             tax_amount_groups_invoices = rec._get_tax_amount_groups_from_invoices()

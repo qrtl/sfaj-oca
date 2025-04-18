@@ -1,2 +1,1 @@
-# FIXME: Revive tests
-# from . import test_account_billing_tax_adjustment
+from . import test_l10n_jp_summary_invoice
