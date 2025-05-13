@@ -10,7 +10,6 @@ class TestPaymentTermCutoffDate(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-
         cls.payment_term = cls.env["account.payment.term"].create(
             {"name": "Test Payment Term"}
         )
@@ -40,6 +39,17 @@ class TestPaymentTermCutoffDate(TransactionCase):
         when invoice date is after cutoff_day"""
         invoice_date = date(2024, 2, 21)
         expected_due_date = date(2024, 4, 30)
+        computed_due_date = self.payment_term_line._get_due_date(invoice_date)
+        self.assertEqual(
+            computed_due_date,
+            expected_due_date,
+        )
+
+    def test_due_date_after_cutoff_day_with_31_days(self):
+        """Test if due date is shifted by +1 month and the following month has 31 days
+        when invoice date is after cutoff_day"""
+        invoice_date = date(2025, 1, 31)
+        expected_due_date = date(2025, 3, 31)
         computed_due_date = self.payment_term_line._get_due_date(invoice_date)
         self.assertEqual(
             computed_due_date,
