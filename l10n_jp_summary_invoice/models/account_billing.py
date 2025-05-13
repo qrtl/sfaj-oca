@@ -171,8 +171,9 @@ class AccountBilling(models.Model):
         for rec in self.filtered(lambda x: x.bill_type == "out_invoice"):
             tax_totals = rec.tax_totals
             groups_by_subtotal = tax_totals.get("groups_by_subtotal", {})
+            if not groups_by_subtotal:
+                continue
             key = next(iter(groups_by_subtotal))
-
             tax_group_amount_dict = {
                 entry["tax_group_id"]: entry["tax_group_amount"] * -1
                 for entry in groups_by_subtotal[key]

@@ -10,7 +10,29 @@ class TestSummaryInvoice(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.partner = cls.env["res.partner"].create({"name": "Test Partner"})
+        cls.company = cls.env["res.company"].create(
+            {
+                "name": "test company",
+                "currency_id": cls.env.ref("base.JPY").id,
+                "country_id": cls.env.ref("base.jp").id,
+                "tax_calculation_rounding_method": "round_globally",
+            }
+        )
+        cls.env.company = cls.company
+        account_receivable = cls.env["account.account"].create(
+            {
+                "code": "test2",
+                "name": "receivable",
+                "reconcile": True,
+                "account_type": "asset_receivable",
+            }
+        )
+        cls.partner = cls.env["res.partner"].create(
+            {
+                "name": "Test Partner",
+                "property_account_receivable_id": account_receivable.id,
+            }
+        )
         cls.bank_account = cls.env["res.partner.bank"].create(
             {
                 "partner_id": cls.env.company.partner_id.id,
@@ -18,33 +40,60 @@ class TestSummaryInvoice(TransactionCase):
             }
         )
         cls.product = cls.env["product.product"].create({"name": "Test Product"})
-        cls.tax_15 = cls.env["account.tax"].search([("amount", "=", 15.0)], limit=1)
-
-    def _create_invoice(self, amount, tax, partner=None, bank=None):
-        invoice = self.env["account.move"].create(
+        cls.tax_10 = cls.env["account.tax"].create(
             {
-                "move_type": "out_invoice",
-                "partner_id": partner or self.partner.id,
-                "partner_bank_id": bank and bank.id,
-                "invoice_line_ids": [
-                    Command.create(
-                        {
-                            "product_id": self.product.id,
-                            "quantity": 1,
-                            "price_unit": amount,
-                            "tax_ids": [Command.set(tax.ids)],
-                        }
-                    )
-                ],
+                "name": "Test Tax 10%",
+                "amount": 10.0,
+                "type_tax_use": "sale",
             }
+        )
+        cls.journal = cls.env["account.journal"].create(
+            {"code": "test", "name": "test", "type": "sale"}
+        )
+        cls.account_income = cls.env["account.account"].create(
+            {
+                "code": "test1",
+                "name": "income",
+                "account_type": "income",
+            }
+        )
+
+    def _create_invoice(self, amount, tax, bank=None):
+        invoice = (
+            self.env["account.move"]
+            .with_company(self.company)
+            .create(
+                {
+                    "move_type": "out_invoice",
+                    "partner_id": self.partner.id,
+                    "partner_bank_id": bank and bank.id,
+                    "invoice_line_ids": [
+                        Command.create(
+                            {
+                                "product_id": self.product.id,
+                                "account_id": self.account_income.id,
+                                "quantity": 1,
+                                "price_unit": amount,
+                                "tax_ids": [Command.set(tax.ids)],
+                            }
+                        )
+                    ],
+                }
+            )
         )
         invoice.action_post()
         return invoice
 
-    def test_constrains_invoice_not_for_billing(self):
-        invoice = self._create_invoice(100, self.tax_15)
+    def test_get_moves_filters_billed_and_flags(self):
+        invoice = self._create_invoice(50, self.tax_10)
         invoice.write({"is_not_for_billing": True})
+        billing = self.env["account.billing"].create({"partner_id": self.partner.id})
+        moves = billing._get_moves()
+        self.assertNotIn(invoice.id, moves.ids)
 
+    def test_constrains_invoice_not_for_billing(self):
+        invoice = self._create_invoice(100, self.tax_10)
+        invoice.write({"is_not_for_billing": True})
         with self.assertRaises(ValidationError):
             self.env["account.billing"].create(
                 {
@@ -54,14 +103,13 @@ class TestSummaryInvoice(TransactionCase):
             )
 
     def test_constrains_remit_to_bank_conflict(self):
-        invoice = self._create_invoice(100, self.tax_15, bank=self.bank_account)
+        invoice = self._create_invoice(100, self.tax_10, bank=self.bank_account)
         other_bank = self.env["res.partner.bank"].create(
             {
                 "partner_id": self.env.company.partner_id.id,
                 "acc_number": "other_bank_acc",
             }
         )
-
         with self.assertRaises(ValidationError):
             self.env["account.billing"].create(
                 {
@@ -72,8 +120,8 @@ class TestSummaryInvoice(TransactionCase):
             )
 
     def test_compute_billing_due_date(self):
-        inv1 = self._create_invoice(100, self.tax_15)
-        inv2 = self._create_invoice(200, self.tax_15)
+        inv1 = self._create_invoice(100, self.tax_10)
+        inv2 = self._create_invoice(200, self.tax_10)
         inv1.invoice_date_due = inv1.invoice_date_due.replace(day=5)
         inv2.invoice_date_due = inv2.invoice_date_due.replace(day=25)
         billing = self.env["account.billing"].create(
@@ -88,7 +136,7 @@ class TestSummaryInvoice(TransactionCase):
         self.assertEqual(billing.date_due, inv2.invoice_date_due)
 
     def test_update_remit_to_bank_defaulting(self):
-        invoice = self._create_invoice(100, self.tax_15, bank=self.bank_account)
+        invoice = self._create_invoice(100, self.tax_10, bank=self.bank_account)
         billing = self.env["account.billing"].create(
             {
                 "partner_id": self.partner.id,
@@ -97,28 +145,31 @@ class TestSummaryInvoice(TransactionCase):
         )
         self.assertEqual(billing.remit_to_bank_id, self.bank_account)
 
-    def test_get_moves_filters_billed_and_flags(self):
-        billed_invoice = self._create_invoice(50, self.tax_15)
-        billed_invoice.write({"is_not_for_billing": True})
-        billing = self.env["account.billing"].create(
-            {
-                "partner_id": self.partner.id,
-            }
-        )
-        moves = billing._get_moves()
-        self.assertNotIn(billed_invoice.id, moves.ids)
-
     def test_create_tax_adjustment_entry(self):
-        inv_1_15 = self._create_invoice(200.5, self.tax_15)
-        inv_2_15 = self._create_invoice(100.5, self.tax_15)
-        invoices = inv_1_15 + inv_2_15
-        self.assertEqual(inv_1_15.invoice_line_ids.tax_ids.amount, 15.0)
-        self.assertEqual(inv_2_15.invoice_line_ids.tax_ids.amount, 15.0)
+        inv_1 = self._create_invoice(101, self.tax_10)
+        inv_2 = self._create_invoice(102, self.tax_10)
+        inv_3 = self._create_invoice(103, self.tax_10)
+        self.assertEqual(inv_1.amount_tax, 10)
+        self.assertEqual(inv_2.amount_tax, 10)
+        self.assertEqual(inv_3.amount_tax, 10)
+        invoices = inv_1 + inv_2 + inv_3
         action = invoices.action_create_billing()
         billing = self.env["account.billing"].browse(action["res_id"])
         self.assertEqual(billing.state, "draft")
-        billing.validate_billing()
+        billing.with_company(self.company).validate_billing()
+        tax_totals = billing.tax_totals
+        groups_by_subtotal = tax_totals.get("groups_by_subtotal", {})
+        key = next(iter(groups_by_subtotal))
+        tax_group_amount_dict = {
+            entry["tax_group_id"]: entry["tax_group_amount"] * -1
+            for entry in groups_by_subtotal[key]
+        }
+        billing_tax_amount = round(
+            tax_group_amount_dict.get(self.tax_10.tax_group_id.id, 0), 0
+        )
+        self.assertEqual(abs(billing_tax_amount), 31)
         tax_adjustment_entry = billing.tax_adjustment_entry_id
         self.assertTrue(
             tax_adjustment_entry, "Tax adjustment journal entry should be created."
         )
+        self.assertEqual(tax_adjustment_entry.amount_total_signed, 1)
