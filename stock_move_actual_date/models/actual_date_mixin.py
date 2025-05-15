@@ -28,8 +28,9 @@ class ActualDateMixin(models.AbstractModel):
 
     def _get_stock_moves(self):
         """This method should be overridden in the specific model to return related moves."""
-        self.ensure_one()
-        return self.env["stock.move"].browse()
+        raise NotImplementedError(
+            "Subclasses must override _get_stock_moves to return related stock moves."
+        )
 
     def _get_done_state(self):
         """This method should be overridden in the specific model depending on its state."""
