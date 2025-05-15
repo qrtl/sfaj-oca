@@ -9,6 +9,7 @@ class ActualDateMixin(models.AbstractModel):
 
     actual_date = fields.Date(
         tracking=True,
+        copy=False,
         help="If set, the value is propagated "
         "to the related journal entries as the date.",
     )
@@ -32,7 +33,6 @@ class ActualDateMixin(models.AbstractModel):
 
     def _get_done_state(self):
         """This method should be overridden in the specific model depending on its state."""
-        self.ensure_one()
         return ["done"]
 
     @api.model_create_multi
@@ -48,10 +48,11 @@ class ActualDateMixin(models.AbstractModel):
     def write(self, vals):
         res = super().write(vals)
         if any(field in vals for field in self._get_actual_date_update_triggers()):
+            state = self._get_done_state()
             for rec in self:
                 moves = rec._get_stock_moves()
                 moves.write({"actual_date_source": rec.actual_date})
-                if rec.state not in self._get_done_state() or "actual_date" not in vals:
+                if rec.state not in state or "actual_date" not in vals:
                     continue
                 account_moves = moves.account_move_ids
                 if not account_moves:
