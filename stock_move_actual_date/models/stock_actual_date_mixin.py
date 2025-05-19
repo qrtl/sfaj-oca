@@ -4,8 +4,8 @@
 from odoo import api, fields, models
 
 
-class ActualDateMixin(models.AbstractModel):
-    _name = "actual.date.mixin"
+class StockActualDateMixin(models.AbstractModel):
+    _name = "stock.actual.date.mixin"
 
     actual_date = fields.Date(
         tracking=True,
