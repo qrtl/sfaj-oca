@@ -6,6 +6,7 @@ from odoo import api, fields, models
 
 class StockActualDateMixin(models.AbstractModel):
     _name = "stock.actual.date.mixin"
+    _description = "Stock Actual Date Mixin"
 
     actual_date = fields.Date(
         tracking=True,
