@@ -7,6 +7,10 @@
             <xpath expr="//field[@name='name']/../.." position="inside">
                 <group>
                     <field name="apply_alternative_layout" />
+                    <field
+                        name="show_header_every_page"
+                        attrs="{'invisible': [('apply_alternative_layout', '=', False)]}"
+                    />
                     <field name="show_commercial_partner" />
                     <field name="show_remit_to_bank" />
                 </group>

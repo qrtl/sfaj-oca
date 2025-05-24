@@ -6,6 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-24 05:54+0000\n"
+"PO-Revision-Date: 2025-05-24 05:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -14,7 +16,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: report_alternative_layout
-#: model_terms:ir.ui.view,arch_db:report_alternative_layout.external_layout_standard
+#: model_terms:ir.ui.view,arch_db:report_alternative_layout.report_custom_address_layout
 msgid "<strong>Remit-to:</strong>"
 msgstr ""
 
@@ -42,6 +44,13 @@ msgid ""
 msgstr ""
 
 #. module: report_alternative_layout
+#: model:ir.model.fields,help:report_alternative_layout.field_ir_actions_report__show_header_every_page
+msgid ""
+"If selected, the report header will be shown on every page of the report "
+"output."
+msgstr ""
+
+#. module: report_alternative_layout
 #: model:ir.model,name:report_alternative_layout.model_ir_actions_report
 msgid "Report Action"
 msgstr ""
@@ -49,6 +58,11 @@ msgstr ""
 #. module: report_alternative_layout
 #: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_commercial_partner
 msgid "Show Commercial Partner"
+msgstr ""
+
+#. module: report_alternative_layout
+#: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_header_every_page
+msgid "Show Header Every Page"
 msgstr ""
 
 #. module: report_alternative_layout

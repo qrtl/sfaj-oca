@@ -19,11 +19,17 @@ class Report(models.Model):
         "Show Remit-to Bank",
         help="If selected, remit-to bank account will show in the report output.",
     )
+    show_header_every_page = fields.Boolean(
+        help="If selected, the report header will be shown on every page of the "
+        "report output.",
+    )
 
     def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
         report = self._get_report(report_ref)
         if report.apply_alternative_layout:
             self = self.with_context(apply_alternative_layout=True)
+        if report.show_header_every_page:
+            self = self.with_context(show_header_every_page=True)
         return super()._render_qweb_pdf(report_ref, res_ids, data)
 
     def _get_partner(self, partner):
@@ -62,3 +68,8 @@ class Report(models.Model):
         if not company:
             return False
         return company.bank_ids[:1]
+
+    @api.onchange("apply_alternative_layout")
+    def _onchange_apply_alternative_layout(self):
+        if not self.apply_alternative_layout:
+            self.show_header_every_page = False
