@@ -13,7 +13,7 @@
         >
             <div class="row">
                 <div class="col-12">
-                    <t t-if="env.context.get('show_header_every_page')">
+                    <t t-if="env.context.get('show_address_in_header')">
                         <t
                             t-call="report_alternative_layout.report_custom_address_layout"
                         />
@@ -35,50 +35,59 @@
         </xpath>
         <xpath expr="//t[@t-call='web.address_layout']" position="after">
             <t
-                t-if="env.context.get('apply_alternative_layout') and not env.context.get('show_header_every_page')"
+                t-if="env.context.get('apply_alternative_layout') and not env.context.get('show_address_in_header')"
             >
                 <t t-call="report_alternative_layout.report_custom_address_layout" />
             </t>
-        </xpath>
-    </template>
-    <template id="report_custom_address_layout">
-        <t
-            t-set="report"
-            t-value="o.env['ir.actions.report']._get_report_from_name(xmlid)"
-        />
-        <t t-set="partner" t-value="report._get_partner(o.partner_id)" />
-        <div class="row" name="address_layout">
-            <div class="col-7" name="partner_address">
-                <div
-                    t-esc="partner"
-                    t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": true}'
-                />
-                <div name="information_block" t-if="information_block" class="mt-3">
-                    <t t-out="information_block" />
-                </div>
-            </div>
-            <div class="col-5" name="company_address">
-                <ul class="list-unstyled">
-                    <li t-if="company.is_company_details_empty">
-                        <t
-                            t-esc="company.partner_id"
-                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
-                        />
-                    </li>
-                    <li t-else=""><t t-esc="company.company_details" /></li>
-                    <li t-if="forced_vat">
-                        <t t-esc="company.country_id.vat_label or 'Tax ID'" />:
-                        <span t-esc="forced_vat" />
-                    </li>
-                </ul>
-                <t t-set="remit_to_bank" t-value="report._get_remit_to_bank(o)" />
-                <div name="remit_to_bank" t-if="remit_to_bank" class="mt16">
+            <t
+                t-set="report"
+                t-value="o.env['ir.actions.report']._get_report_from_name(xmlid)"
+            />
+            <t t-set="remit_to_bank" t-value="report._get_remit_to_bank(o)" />
+            <div class="row">
+                <div class="col-7"></div>
+                <div name="remit_to_bank" t-if="remit_to_bank" class="mt16 col-5">
                     <strong>Remit-to:</strong>
                     <ul class="list-unstyled">
                         <li><span t-field="remit_to_bank.bank_id" /></li>
                         <li><span t-field="remit_to_bank.acc_number" /></li>
                         <li>
                             <span t-field="remit_to_bank.acc_holder_name" />
+                        </li>
+                    </ul>
+                </div>
+            </div>                       
+        </xpath>
+    </template>
+    <template id="report_custom_address_layout">
+        <div class="pt-3">
+            <t
+                t-set="report"
+                t-value="o.env['ir.actions.report']._get_report_from_name(xmlid)"
+            />
+            <t t-set="partner" t-value="report._get_partner(o.partner_id)" />
+            <div class="row" name="address_layout">
+                <div class="col-7" name="partner_address">
+                    <div
+                        t-esc="partner"
+                        t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": true}'
+                    />
+                    <div name="information_block" t-if="information_block" class="mt-3">
+                        <t t-out="information_block" />
+                    </div>
+                </div>
+                <div class="col-5" name="company_address">
+                    <ul class="list-unstyled">
+                        <li t-if="company.is_company_details_empty">
+                            <t
+                                t-esc="company.partner_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                            />
+                        </li>
+                        <li t-else=""><t t-esc="company.company_details" /></li>
+                        <li t-if="forced_vat">
+                            <t t-esc="company.country_id.vat_label or 'Tax ID'" />:
+                            <span t-esc="forced_vat" />
                         </li>
                     </ul>
                 </div>
