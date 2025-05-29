@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="base.paperformat_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='report_ids']" position="after">
-                <field name="show_address_in_header" />
+                <field name="apply_alternative_layout" />
+                <field name="show_address_in_header" attrs="{'invisible': [('apply_alternative_layout', '=', False)]}"/>
             </xpath>
         </field>
     </record>

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 05:51+0000\n"
-"PO-Revision-Date: 2025-05-24 05:51+0000\n"
+"POT-Creation-Date: 2025-05-29 10:51+0000\n"
+"PO-Revision-Date: 2025-05-29 10:51+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,14 +16,30 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: report_alternative_layout
-#: model_terms:ir.ui.view,arch_db:report_alternative_layout.report_custom_address_layout
+#: model_terms:ir.ui.view,arch_db:report_alternative_layout.external_layout_standard
+msgid ":<span> </span>"
+msgstr ""
+
+#. module: report_alternative_layout
+#: model_terms:ir.ui.view,arch_db:report_alternative_layout.external_layout_standard
 msgid "<strong>Remit-to:</strong>"
 msgstr "<strong>振込先:</strong>"
 
 #. module: report_alternative_layout
 #: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__apply_alternative_layout
+#: model:ir.model.fields,field_description:report_alternative_layout.field_report_paperformat__apply_alternative_layout
 msgid "Apply Alternative Layout"
 msgstr "代替レイアウトを適用"
+
+#. module: report_alternative_layout
+#: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__date_field
+msgid "Date Field"
+msgstr "日付フィールド"
+
+#. module: report_alternative_layout
+#: model_terms:ir.ui.view,arch_db:report_alternative_layout.external_layout_standard
+msgid "Document No:"
+msgstr "伝票番号:"
 
 #. module: report_alternative_layout
 #: model:ir.model.fields,help:report_alternative_layout.field_ir_actions_report__show_remit_to_bank
@@ -32,6 +48,7 @@ msgstr "選択すると、印刷帳票に振込先が表示されます。"
 
 #. module: report_alternative_layout
 #: model:ir.model.fields,help:report_alternative_layout.field_ir_actions_report__apply_alternative_layout
+#: model:ir.model.fields,help:report_alternative_layout.field_report_paperformat__apply_alternative_layout
 msgid ""
 "If selected, the alternative layout will be applied in the printed report."
 msgstr "選択すると、印刷帳票に代替レイアウトが適用されます。"
@@ -44,11 +61,17 @@ msgid ""
 msgstr "選択すると、ドキュメントの取引先の代わりに商業取引先(親)がレポートで出力されます。"
 
 #. module: report_alternative_layout
-#: model:ir.model.fields,help:report_alternative_layout.field_ir_actions_report__show_header_every_page
+#: model:ir.model.fields,help:report_alternative_layout.field_ir_actions_report__show_address_in_header
+#: model:ir.model.fields,help:report_alternative_layout.field_report_paperformat__show_address_in_header
 msgid ""
 "If selected, the report header will be shown on every page of the report "
 "output."
-msgstr "選択すると、全ページにヘッダー情報が出力されます。"
+msgstr ""
+
+#. module: report_alternative_layout
+#: model:ir.model,name:report_alternative_layout.model_report_paperformat
+msgid "Paper Format Config"
+msgstr ""
 
 #. module: report_alternative_layout
 #: model:ir.model,name:report_alternative_layout.model_ir_actions_report
@@ -56,14 +79,20 @@ msgid "Report Action"
 msgstr "レポートアクション"
 
 #. module: report_alternative_layout
+#: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_address_in_header
+#: model:ir.model.fields,field_description:report_alternative_layout.field_report_paperformat__show_address_in_header
+msgid "Show Address In Header"
+msgstr "アドレスをヘッダに表示"
+
+#. module: report_alternative_layout
 #: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_commercial_partner
 msgid "Show Commercial Partner"
 msgstr "商業取引先(親)を表示"
 
 #. module: report_alternative_layout
-#: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_header_every_page
-msgid "Show Header Every Page"
-msgstr "全ページにヘッダを表示"
+#: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_document_number
+msgid "Show Document Number"
+msgstr "伝票番号を表示"
 
 #. module: report_alternative_layout
 #: model:ir.model.fields,field_description:report_alternative_layout.field_ir_actions_report__show_remit_to_bank

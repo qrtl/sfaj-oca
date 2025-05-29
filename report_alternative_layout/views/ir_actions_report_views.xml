@@ -6,13 +6,10 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']/../.." position="inside">
                 <group>
-                    <field name="apply_alternative_layout" />
-                    <field
-                        name="show_address_in_header"
-                        attrs="{'invisible': [('apply_alternative_layout', '=', False)]}"
-                    />
                     <field name="show_commercial_partner" />
                     <field name="show_remit_to_bank" />
+                    <field name="show_document_number" />
+                    <field name="date_field" />
                 </group>
             </xpath>
         </field>

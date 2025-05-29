@@ -2,14 +2,17 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.tools import format_date
 
 
 class Report(models.Model):
     _inherit = "ir.actions.report"
 
     apply_alternative_layout = fields.Boolean(
-        help="If selected, the alternative layout will be applied in the printed "
-        "report.",
+        related="paperformat_id.apply_alternative_layout", store=True
+    )
+    show_address_in_header = fields.Boolean(
+        related="paperformat_id.show_address_in_header", store=True
     )
     show_commercial_partner = fields.Boolean(
         help="If selected, the commercial partner of the document partner will show "
@@ -19,7 +22,11 @@ class Report(models.Model):
         "Show Remit-to Bank",
         help="If selected, remit-to bank account will show in the report output.",
     )
-    show_address_in_header = fields.Boolean(related="paperformat_id.show_address_in_header", store=True)
+    show_document_number = fields.Boolean()
+    date_field = fields.Many2one(
+        "ir.model.fields",
+        domain="[('model','=', model), ('ttype', 'in', ('date', 'datetime'))]",
+    )
 
     def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
         report = self._get_report(report_ref)
@@ -66,7 +73,11 @@ class Report(models.Model):
             return False
         return company.bank_ids[:1]
 
-    @api.onchange("apply_alternative_layout")
-    def _onchange_apply_alternative_layout(self):
-        if not self.apply_alternative_layout:
-            self.show_address_in_header = False
+    def _get_date_field_value(self, record, field):
+        if not record or not field or not field.name:
+            return None
+        try:
+            value = record[field.name]
+            return format_date(self.env, value)
+        except Exception:
+            return None
