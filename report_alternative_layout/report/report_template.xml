@@ -24,7 +24,7 @@
                 <t t-if="report and report.date_field_id and o">
                     <t
                         t-set="date_value"
-                        t-value="report._get_date_field_value(o, report.date_field_id)"
+                        t-value="report._get_date_field_value(o)"
                     />
                     <t t-if="date_value">
                         <div class="col text-end">

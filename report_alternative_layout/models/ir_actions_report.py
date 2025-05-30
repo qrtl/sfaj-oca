@@ -67,9 +67,10 @@ class Report(models.Model):
             return False
         return company.bank_ids[:1]
 
-    def _get_date_field_value(self, record, field):
+    def _get_date_field_value(self, record):
         try:
-            value = record[field.name]
-            return format_date(self.env, value)
+            if self.date_field_id:
+                value = record[self.date_field_id.name]
+                return format_date(self.env, value)
         except Exception:
             return None
