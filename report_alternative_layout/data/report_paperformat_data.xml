@@ -13,6 +13,8 @@
         <field name="header_line" eval="False" />
         <field name="header_spacing">10</field>
         <field name="dpi">100</field>
+        <field name="apply_alternative_layout" eval="True" />
+
     </record>
     <record id="report_paperformat_a4_header_every_page" model="report.paperformat">
         <field name="name">A4 - company address in every page header</field>
@@ -27,5 +29,7 @@
         <field name="header_line" eval="False" />
         <field name="header_spacing">57</field>
         <field name="dpi">100</field>
+        <field name="apply_alternative_layout" eval="True" />
+        <field name="show_address_in_header" eval="True" />
     </record>
 </odoo>
