@@ -12,11 +12,16 @@ class ReportPaperformat(models.Model):
         "report.",
     )
     show_address_in_header = fields.Boolean(
+        compute="_compute_show_address_in_header",
         help="If selected, the report header will be shown on every page of the "
         "report output.",
+        readonly=False,
+        store=True,
     )
 
-    @api.onchange("apply_alternative_layout")
-    def _onchange_apply_alternative_layout(self):
-        if not self.apply_alternative_layout:
-            self.show_address_in_header = False
+    @api.depends("apply_alternative_layout")
+    def _compute_show_address_in_header(self):
+        for rec in self:
+            if rec.apply_alternative_layout:
+                continue
+            rec.show_address_in_header = False

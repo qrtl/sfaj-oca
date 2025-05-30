@@ -8,12 +8,6 @@ from odoo.tools import format_date
 class Report(models.Model):
     _inherit = "ir.actions.report"
 
-    apply_alternative_layout = fields.Boolean(
-        related="paperformat_id.apply_alternative_layout", store=True
-    )
-    show_address_in_header = fields.Boolean(
-        related="paperformat_id.show_address_in_header", store=True
-    )
     show_commercial_partner = fields.Boolean(
         help="If selected, the commercial partner of the document partner will show "
         "in the report output (instead of the document partner)."
@@ -30,9 +24,9 @@ class Report(models.Model):
 
     def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
         report = self._get_report(report_ref)
-        if report.apply_alternative_layout:
+        if report.paperformat_id.apply_alternative_layout:
             self = self.with_context(apply_alternative_layout=True)
-        if report.show_address_in_header:
+        if report.paperformat_id.show_address_in_header:
             self = self.with_context(show_address_in_header=True)
         return super()._render_qweb_pdf(report_ref, res_ids, data)
 
@@ -74,8 +68,6 @@ class Report(models.Model):
         return company.bank_ids[:1]
 
     def _get_date_field_value(self, record, field):
-        if not record or not field or not field.name:
-            return None
         try:
             value = record[field.name]
             return format_date(self.env, value)
