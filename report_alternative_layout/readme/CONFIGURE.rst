@@ -3,6 +3,8 @@ update the following fields as necessary.
 
 - Apply Alternative Layout: If selected, the alternative layout will be applied in the
   printed report.
-- Paper Format: Select 'A4 - no company address in header' if 'Apply Alternative Layout' is selected.
+- Paper Format: 
+  - Select 'A4 - no company address in header' if 'Apply Alternative Layout' is selected.
+  - Select 'A4 - company address in every page header' if 'Apply Alternative Layout' and 'Show Header Every Page' is selected.
 - Show Commercial Partner: If selected, the commercial partner of the document partner
   will show in the report output (instead of the document partner).
