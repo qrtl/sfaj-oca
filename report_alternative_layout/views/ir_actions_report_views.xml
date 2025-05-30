@@ -9,7 +9,7 @@
                     <field name="show_commercial_partner" />
                     <field name="show_remit_to_bank" />
                     <field name="show_document_number" />
-                    <field name="date_field" />
+                    <field name="date_field_id" />
                 </group>
             </xpath>
         </field>

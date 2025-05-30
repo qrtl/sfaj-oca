@@ -21,14 +21,14 @@
                     </div>
                 </t>
                 <!-- Display the date field in header -->
-                <t t-if="report and report.date_field and o">
+                <t t-if="report and report.date_field_id and o">
                     <t
                         t-set="date_value"
-                        t-value="report._get_date_field_value(o, report.date_field)"
+                        t-value="report._get_date_field_value(o, report.date_field_id)"
                     />
                     <t t-if="date_value">
                         <div class="col text-end">
-                            <t t-esc="report.date_field.field_description" />
+                            <t t-esc="report.date_field_id.field_description" />
                             :<span>&#xa0;</span>
                             <span t-esc="date_value" />
                         </div>

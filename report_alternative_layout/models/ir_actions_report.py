@@ -17,7 +17,7 @@ class Report(models.Model):
         help="If selected, remit-to bank account will show in the report output.",
     )
     show_document_number = fields.Boolean()
-    date_field = fields.Many2one(
+    date_field_id = fields.Many2one(
         "ir.model.fields",
         domain="[('model','=', model), ('ttype', 'in', ('date', 'datetime'))]",
     )
