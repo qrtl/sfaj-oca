@@ -7,119 +7,90 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import Command, fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.tests.common import TransactionCase
+from odoo.tests import tagged
+
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
-class TestAccountBilling(TransactionCase):
+@tagged("post_install", "-at_install")
+class TestAccountBilling(AccountTestInvoicingCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.journal_sale = cls.env["account.journal"].search([("type", "=", "sale")])[0]
-        cls.invoice_model = cls.env["account.move"]
-        cls.invoice_line_model = cls.env["account.move.line"]
         cls.billing_model = cls.env["account.billing"]
         cls.register_payments_model = cls.env["account.payment.register"]
 
-        cls.partner_id = cls.env["res.partner"].create({"name": "Test Partner"})
         cls.payment_term = cls.env.ref("account.account_payment_term_15days")
-        cls.partner_agrolait = cls.env.ref("base.res_partner_2")
         cls.partner_china_exp = cls.env.ref("base.res_partner_3")
         cls.product = cls.env.ref("product.product_product_4")
-        cls.currency_eur = cls.env["res.currency"].browse(1)
-        cls.currency_eur.active = True
+
         cls.currency_usd_id = cls.env.ref("base.USD").id
+        # Activate multi currency
+        cls.env.ref("base.EUR").active = True
         cls.currency_eur_id = cls.env.ref("base.EUR").id
-        cls.account_receivable = cls.env["account.account"].search(
-            [
-                (
-                    "account_type",
-                    "=",
-                    "asset_receivable",
-                )
-            ],
-            limit=1,
-        )
-        cls.account_revenue = cls.env["account.account"].search(
-            [
-                (
-                    "account_type",
-                    "=",
-                    "income",
-                ),
-                ("company_id", "=", cls.env.company.id),
-            ],
-            limit=1,
-        )
-        cls.journal_bank = cls.env["account.journal"].create(
-            {"name": "Bank", "type": "bank", "code": "BNK67"}
-        )
-        cls.payment_method_manual_in = cls.journal_bank.inbound_payment_method_line_ids[
-            0
-        ]
 
-        cls.inv_1 = cls.create_invoice(
-            cls, amount=100, currency_id=cls.currency_eur_id, partner=cls.partner_id.id
-        )
-        cls.inv_2 = cls.create_invoice(
-            cls, amount=200, currency_id=cls.currency_eur_id, partner=cls.partner_id.id
-        )
-        cls.inv_3 = cls.create_invoice(
-            cls, amount=300, currency_id=cls.currency_usd_id, partner=cls.partner_id.id
-        )
-        cls.inv_4 = cls.create_invoice(
+        cls.journal_bank = cls.company_data["default_journal_bank"]
+
+        cls.inv_1 = cls._create_invoice(
             cls,
-            amount=400,
+            move_type="out_invoice",
+            invoice_amount=100,
             currency_id=cls.currency_eur_id,
-            partner=cls.partner_china_exp.id,
+            partner_id=cls.partner_a.id,
+            payment_term_id=cls.payment_term.id,
+            auto_validate=True,
         )
-        cls.inv_5 = cls.create_invoice(
-            cls, amount=500, currency_id=cls.currency_usd_id, partner=cls.partner_id.id
-        )
-        cls.inv_6 = cls.create_invoice(
+        cls.inv_2 = cls._create_invoice(
             cls,
-            amount=500,
+            move_type="out_invoice",
+            invoice_amount=200,
+            currency_id=cls.currency_eur_id,
+            partner_id=cls.partner_a.id,
+            payment_term_id=cls.payment_term.id,
+            auto_validate=True,
+        )
+        cls.inv_3 = cls._create_invoice(
+            cls,
+            move_type="out_invoice",
+            invoice_amount=300,
             currency_id=cls.currency_usd_id,
-            partner=cls.partner_id.id,
-            invoice_type="in_refund",
+            partner_id=cls.partner_a.id,
+            payment_term_id=cls.payment_term.id,
+            auto_validate=True,
         )
-
-    def create_invoice(
-        self,
-        amount=None,
-        invoice_type="out_invoice",
-        currency_id=None,
-        partner=None,
-        account_id=None,
-    ):
-        """Returns an open invoice"""
-        invoice = self.invoice_model.create(
-            {
-                "partner_id": partner or self.partner_agrolait.id,
-                "currency_id": currency_id or self.currency_eur_id,
-                "move_type": invoice_type,
-                "invoice_date": fields.Date.today(),
-                "invoice_payment_term_id": self.payment_term.id,
-                "invoice_line_ids": [
-                    Command.create(
-                        {
-                            "product_id": self.product.id,
-                            "quantity": 1,
-                            "price_unit": amount,
-                            "name": "something",
-                            "account_id": self.account_revenue.id,
-                        }
-                    )
-                ],
-            }
+        cls.inv_4 = cls._create_invoice(
+            cls,
+            move_type="out_invoice",
+            invoice_amount=400,
+            currency_id=cls.currency_eur_id,
+            partner_id=cls.partner_china_exp.id,
+            payment_term_id=cls.payment_term.id,
+            auto_validate=True,
         )
-        invoice.action_post()
-        return invoice
+        cls.inv_5 = cls._create_invoice(
+            cls,
+            move_type="out_invoice",
+            invoice_amount=500,
+            currency_id=cls.currency_usd_id,
+            partner_id=cls.partner_a.id,
+            payment_term_id=cls.payment_term.id,
+            auto_validate=True,
+        )
+        cls.inv_6 = cls._create_invoice(
+            cls,
+            move_type="in_refund",
+            invoice_amount=500,
+            currency_id=cls.currency_usd_id,
+            partner_id=cls.partner_a.id,
+            payment_term_id=cls.payment_term.id,
+            auto_validate=True,
+        )
 
     def create_payment(self, ctx):
         register_payments = self.register_payments_model.with_context(**ctx).create(
             {
                 "journal_id": self.journal_bank.id,
-                "payment_method_line_id": self.payment_method_manual_in.id,
+                "payment_method_line_id": self.inbound_payment_method_line.id,
             }
         )
         return register_payments.action_create_payments()
@@ -179,7 +150,7 @@ class TestAccountBilling(TransactionCase):
         bill1 = self.billing_model.create(
             {
                 "bill_type": "out_invoice",
-                "partner_id": self.partner_id.id,
+                "partner_id": self.partner_a.id,
                 "currency_id": self.currency_eur_id,
                 "threshold_date": datetime.now(),
                 "threshold_date_type": "invoice_date_due",
@@ -199,26 +170,26 @@ class TestAccountBilling(TransactionCase):
         bill2 = self.billing_model.create(
             {
                 "bill_type": "in_invoice",
-                "partner_id": self.partner_id.id,
+                "partner_id": self.partner_a.id,
                 "currency_id": self.currency_usd_id,
                 "threshold_date": datetime.now(),
                 "threshold_date_type": "invoice_date_due",
             }
         )
-        bill2.threshold_date = bill2.threshold_date + relativedelta(months=1)
+        bill2.threshold_date = bill2.threshold_date + relativedelta(months=12)
         bill2.compute_lines()
         bill2.validate_billing()
         self.assertEqual(bill2.invoice_related_count, 1)
 
     def test_6_check_billing_from_bills(self):
-        inv_1 = self.create_invoice(
-            amount=100,
+        inv_1 = self._create_invoice(
+            move_type="in_invoice",
+            invoice_amount=100,
             currency_id=self.currency_eur_id,
-            partner=self.partner_id.id,
-            invoice_type="in_invoice",
+            partner_id=self.partner_a.id,
+            payment_term_id=self.payment_term.id,
+            auto_validate=True,
         )
-        if inv_1.state != "posted":
-            inv_1.action_post()
         inv_2 = inv_1.copy()
         # Need to explicitly assign invoice date, not kept on copy
         inv_2.invoice_date = fields.Date.today()
@@ -227,3 +198,23 @@ class TestAccountBilling(TransactionCase):
         invoices = inv_1 + inv_2
         action = invoices.action_create_billing()
         self.billing_model.browse(action["res_id"])
+
+    def test_7_record_rule_company_restriction(self):
+        other_company = self.env["res.company"].create({"name": "Other Company"})
+        billing_other = self.billing_model.with_company(other_company).create(
+            {
+                "bill_type": "out_invoice",
+                "partner_id": self.partner_a.id,
+                "currency_id": self.currency_eur_id,
+                "threshold_date": datetime.now(),
+                "threshold_date_type": "invoice_date_due",
+                "company_id": other_company.id,
+            }
+        )
+        self.env.user.company_ids = [Command.set([self.env.company.id])]
+        billing = self.billing_model.search([("id", "=", billing_other.id)])
+        self.assertFalse(billing, "Billing from another company should not be visible")
+        billing_with_sudo = self.billing_model.sudo().search(
+            [("id", "=", billing_other.id)]
+        )
+        self.assertTrue(billing_with_sudo, "Sudo should bypass company record rule")
