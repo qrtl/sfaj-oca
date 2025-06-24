@@ -124,9 +124,6 @@ class AccountBilling(models.Model):
     def compute_lines(self):
         res = super().compute_lines()
         self._update_remit_to_bank_id()
-        # In case _compute_billing_ids is not triggered again after compute_lines.
-        moves = self.billing_line_ids.mapped("move_id")
-        moves._compute_billing_ids()
         return res
 
     def _get_moves(self, date=False, types=False):
