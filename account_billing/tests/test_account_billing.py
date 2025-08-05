@@ -47,6 +47,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=200,
             currency_id=cls.currency_eur_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -56,6 +57,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=300,
             currency_id=cls.currency_usd_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -65,6 +67,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=400,
             currency_id=cls.currency_eur_id,
             partner_id=cls.partner_china_exp.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -74,6 +77,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=500,
             currency_id=cls.currency_usd_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -83,6 +87,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=500,
             currency_id=cls.currency_usd_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
