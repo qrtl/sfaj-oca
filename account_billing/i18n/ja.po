@@ -6,14 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-25 10:25+0000\n"
-"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"PO-Revision-Date: 2025-06-18 10:25+0000\n"
+"Last-Translator: Ryoko Tsuda <ryoko@quartile.co>\n"
 "Language-Team: none\n"
-"Language: it\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.10.4\n"
 
 #. module: account_billing
@@ -29,88 +29,86 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"            * Lo stato \"Bozza\" viene utilizzato quando un utente crea una "
-"nuova fatturazione\n"
+"            * 'ドラフト' 状態は、"
+"ユーザが新しい合計請求書を作成したときに使用されます\n"
 "\n"
-"            * Lo stato \"Fatturato\" viene utilizzato quando l'utente ha "
-"confermato la fatturazione,\n"
-"                viene generato il numero di fatturazione\n"
+"            * '請求済' 状態はユーザが合計請求書を検証し、"
+"合計請求書番号が生成された時に\n"
+"                使用されます\n"
 "\n"
-"            * Lo stato \"Annullato\" viene utilizzato quando la fatturazione "
-"dell'utente viene annullata\n"
+"            * '取消' 状態はユーザが合計請求書を取消した時に使用されます\n"
 "        "
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__invoice_related_count
 msgid "# of Invoices"
-msgstr "N° di fatture"
+msgstr "# 請求書"
 
 #. module: account_billing
 #: model:ir.actions.report,print_report_name:account_billing.report_account_billing
 msgid ""
 "'BILL-%s%s' % (object.name, object.state == 'draft' and '-draft' or '')"
 msgstr ""
-"'FATTURA-%s%s' % (object.name, object.state == 'draft' and '-draft' or '')"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<span>Due Date</span>"
-msgstr "<span>Data scadenza</span>"
+msgstr "<span>期日</span>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<span>Invoice Date</span>"
-msgstr "<span>Data fattura</span>"
+msgstr "<span>請求日</span>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<span>Invoice Number</span>"
-msgstr "<span>Numero fatturar</span>"
+msgstr "<span>請求書番号</span>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<span>Notes :</span>"
-msgstr "<span>Note :</span>"
+msgstr "<span>ノート :</span>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<span>Source Document</span>"
-msgstr "<span>Documento origine</span>"
+msgstr "<span>参照元</span>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<span>Status</span>"
-msgstr "<span>Stato</span>"
+msgstr "<span>状態</span>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<span>Total</span>"
-msgstr "<span>Totale </span>"
+msgstr "<span>合計</span>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<strong>Billing Date:</strong>"
-msgstr "<strong>Data fatturazione:</strong>"
+msgstr "<strong>合計請求日:</strong>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<strong>Currency:</strong>"
-msgstr "<strong>Valuta:</strong>"
+msgstr "<strong>通貨:</strong>"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "<strong>Due Date:</strong>"
-msgstr "<strong>Data scadenza:</strong>"
+msgstr "<strong>期日:</strong>"
 
 #. module: account_billing
 #: model:ir.model,name:account_billing.model_account_billing
 msgid "Account Billing"
-msgstr "Fatturazione conto"
+msgstr "合計請求書"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_needaction
 msgid "Action Needed"
-msgstr "Azione richiesta"
+msgstr "要アクション"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__threshold_date
@@ -118,45 +116,43 @@ msgstr "Azione richiesta"
 msgid ""
 "All invoices with date (threshold date type) before and equal to threshold "
 "date will be listed in billing lines"
-msgstr ""
-"Tutte le fatture con data (tipo data soglia) precedente e uguale alla data "
-"soglia saranno elencate nelle righe di fatturazione"
+msgstr "閾日タイプの日付が閾日以前請求書が合計請求書明細行に追加されます。"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__amount_residual
 msgid "Amount Due"
-msgstr "Importo dovuto"
+msgstr "未消込額"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Are you sure to cancel this document?"
-msgstr "Sicuri di annullare questo documento?"
+msgstr "このドキュメントを本当に取消しますか"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_attachment_count
 msgid "Attachment Count"
-msgstr "Conteggio allegati"
+msgstr "添付数"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__billing_line_ids
 msgid "Bill Lines"
-msgstr "Righe fattura"
+msgstr "合計請求書明細"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__bill_type
 msgid "Bill Type"
-msgstr "Tipo fattura"
+msgstr "合計請求書タイプ"
 
 #. module: account_billing
 #: model:ir.model.fields.selection,name:account_billing.selection__account_billing__state__billed
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Billed"
-msgstr "Fatturato"
+msgstr "請求済"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Billed Billing"
-msgstr "Fatturazione fatturata"
+msgstr "請求済合計請求書"
 
 #. module: account_billing
 #. odoo-python
@@ -170,29 +166,29 @@ msgstr "Fatturazione fatturata"
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 #, python-format
 msgid "Billing"
-msgstr "Fatturazione"
+msgstr "合計請求書"
 
 #. module: account_billing
 #. odoo-python
 #: code:addons/account_billing/models/account_billing.py:0
 #, python-format
 msgid "Billing %s is cancelled"
-msgstr "La fatturazione %s è annullata"
+msgstr "合計請求書 %s は取消されました"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__date
 msgid "Billing Date"
-msgstr "Data fatturazione"
+msgstr "合計請求日"
 
 #. module: account_billing
 #: model:ir.model,name:account_billing.model_account_billing_line
 msgid "Billing Line"
-msgstr "Riga fatturazione"
+msgstr "合計請求書明細"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Billing Lines"
-msgstr "Righe fatturazione"
+msgstr "合計請求書明細"
 
 #. module: account_billing
 #. odoo-python
@@ -201,131 +197,130 @@ msgstr "Righe fatturazione"
 msgid ""
 "Billing cannot be processed because some invoices are not in the 'Posted' or"
 " 'Paid' state already."
-msgstr ""
-"La fatturazione non può essere elaborata perché alcune fatture non sono "
-"ancora nello stato \"Registrate\" o \"Pagate\"."
+msgstr "「記帳済」または「支払済」の状態になっていない請求書があるため、合計請求処理"
+"ができません。"
 
 #. module: account_billing
 #. odoo-python
 #: code:addons/account_billing/models/account_billing.py:0
 #, python-format
 msgid "Billing is billed."
-msgstr "La fatturazione è fatturata."
+msgstr "合計請求書が請求されました。"
 
 #. module: account_billing
 #. odoo-python
 #: code:addons/account_billing/models/account_billing.py:0
 #, python-format
 msgid "Billing is reset to draft"
-msgstr "La fatturazione è reimpostata a bozza"
+msgstr "合計請求書がドラフトにリセットされます"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_bank_statement_line__billing_ids
 #: model:ir.model.fields,field_description:account_billing.field_account_move__billing_ids
 #: model:ir.model.fields,field_description:account_billing.field_account_payment__billing_ids
 msgid "Billings"
-msgstr "Fatturazioni"
+msgstr "合計請求書"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Cancel"
-msgstr "Annulla"
+msgstr "取消"
 
 #. module: account_billing
 #: model:ir.model.fields.selection,name:account_billing.selection__account_billing__state__cancel
 msgid "Cancelled"
-msgstr "Annullata"
+msgstr "取消済"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 msgid "Cancelled Billing"
-msgstr "Fatturazione annullata"
+msgstr "取消済合計請求書"
 
 #. module: account_billing
 #: model_terms:ir.actions.act_window,help:account_billing.action_customer_billing
 #: model_terms:ir.actions.act_window,help:account_billing.action_supplier_billing
 msgid "Click to register a new billing."
-msgstr "Fare clic per registrare una nuova fatturazione."
+msgstr "クリックして新しい合計請求書を登録します。"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__company_id
 msgid "Company"
-msgstr "Azienda"
+msgstr "会社"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Compute items"
-msgstr "Calcola elementi"
+msgstr "明細を算出"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__invoice_related_count
 msgid "Count invoice in billing"
-msgstr "Conta fatture in fatturazione"
+msgstr "合計請求書の請求書数"
 
 #. module: account_billing
 #: model:ir.actions.server,name:account_billing.action_account_invoice_billing
 msgid "Create Billing"
-msgstr "Crea fatturazione"
+msgstr "合計請求書作成"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__create_uid
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__create_uid
 msgid "Created by"
-msgstr "Creato da"
+msgstr "作成者"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__create_date
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__create_date
 msgid "Created on"
-msgstr "Creato il"
+msgstr "作成日"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__currency_id
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__currency_id
 #: model:ir.model.fields,help:account_billing.field_account_billing__currency_id
 msgid "Currency"
-msgstr "Valuta"
+msgstr "通貨"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_tree
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Customer"
-msgstr "Cliente"
+msgstr "顧客"
 
 #. module: account_billing
 #: model:ir.model.fields.selection,name:account_billing.selection__account_billing__bill_type__out_invoice
 msgid "Customer Invoice"
-msgstr "Fattura cliente"
+msgstr "顧客請求書"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__display_name
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__display_name
 msgid "Display Name"
-msgstr "Nome visualizzato"
+msgstr "表示名"
 
 #. module: account_billing
 #: model:ir.model.fields.selection,name:account_billing.selection__account_billing__state__draft
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Draft"
-msgstr "Bozza"
+msgstr "ドラフト"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.report_billing_document
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Draft Billing"
-msgstr "Bozza fatturazione"
+msgstr "ドラフト合計請求書"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__threshold_date
 #: model:ir.model.fields.selection,name:account_billing.selection__account_billing__threshold_date_type__invoice_date_due
 msgid "Due Date"
-msgstr "Scadenza"
+msgstr "期日"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__date
 msgid "Effective date for accounting entries"
-msgstr "Data effettiva registrazioni contabili"
+msgstr "会計仕訳有効日"
 
 #. module: account_billing
 #: model_terms:ir.actions.act_window,help:account_billing.action_customer_billing
@@ -333,30 +328,28 @@ msgid ""
 "Enter the customer the invoices expect to be paid by the customer for this\n"
 "            bill period. By default the pending invoices will be listed, automatically."
 msgstr ""
-"Inserire il cliente che le fatture prevedono di pagare per questo periodo di "
-"fatturazione. \n"
-"            Per impostazione predefinita, le fatture in sospeso saranno "
-"elencate automaticamente."
+"合計請求期間中に顧客から支払われる予定の請求書を入力します。\n"
+"デフォルトでは、保留中の請求書が自動的にリストアップされます。"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_follower_ids
 msgid "Followers"
-msgstr "Seguito da"
+msgstr "フォロワー"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Seguito da (partner)"
+msgstr "フォロワー (取引先)"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Group By"
-msgstr "Raggruppa per"
+msgstr "グループ化"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__has_message
 msgid "Has Message"
-msgstr "Ha un messaggio"
+msgstr "メッセージあり"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__id
@@ -367,281 +360,279 @@ msgstr "ID"
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "Se selezionata, nuovi messaggi richiedono attenzione."
+msgstr "チェックした場合は、新しいメッセージに注意が必要です。"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Se selezionata, alcuni messaggi hanno un errore di consegna."
+msgstr "チェックした場合は、いくつかのメッセージは配信エラーになります。"
 
 #. module: account_billing
 #: model:ir.model.fields.selection,name:account_billing.selection__account_billing__threshold_date_type__invoice_date
 msgid "Invoice Date"
-msgstr "Data fattura"
+msgstr "請求日"
 
 #. module: account_billing
 #. odoo-python
 #: code:addons/account_billing/models/account_billing.py:0
 #, python-format
 msgid "Invoice paid already."
-msgstr "Fattura già pagata."
+msgstr "請求書は既に支払済です。"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__invoice_date
 msgid "Invoice/Bill Date"
-msgstr "Data fattura/conto"
+msgstr "請求日"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Invoices"
-msgstr "Fatture"
+msgstr "請求書"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_is_follower
 msgid "Is Follower"
-msgstr "Segue"
+msgstr "フォロー中"
 
 #. module: account_billing
 #: model:ir.model,name:account_billing.model_account_move
 msgid "Journal Entry"
-msgstr "Registrazione contabile"
+msgstr "仕訳"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing____last_update
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line____last_update
 msgid "Last Modified on"
-msgstr "Ultima modifica il"
+msgstr "最終修正日"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__write_uid
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__write_uid
 msgid "Last Updated by"
-msgstr "Ultimo aggiornamento di"
+msgstr "最終更新者"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__write_date
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__write_date
 msgid "Last Updated on"
-msgstr "Ultimo aggiornamento il"
+msgstr "最終更新日"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__company_id
 msgid ""
 "Leave this field empty if this route is shared             between all "
 "companies"
-msgstr ""
-"Lasciare questo campo vuoto se questo percorso              è condiviso tra "
-"tutte le aziende"
+msgstr "このルートがすべての会社で共有される場合は、この項目を空欄にしてください。"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_main_attachment_id
 msgid "Main Attachment"
-msgstr "Allegato principale"
+msgstr "主要添付"
 
 #. module: account_billing
 #: model_terms:ir.actions.act_window,help:account_billing.action_supplier_billing
 msgid "Manage supplier billing you want to be used in the system."
-msgstr "Gestione fatturazione fornitori che si vuole utilizzare nel sistema."
+msgstr "システムで仕入先合計請求書を管理。"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_has_error
 msgid "Message Delivery error"
-msgstr "Errore di consegna messaggio"
+msgstr "メッセージ配信エラー"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_ids
 msgid "Messages"
-msgstr "Messaggi"
+msgstr "メッセージ"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__move_id
 msgid "Move"
-msgstr "Registrazione"
+msgstr "仕訳"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__name
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Name"
-msgstr "Nome"
+msgstr "名称"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__narration
 #: model:ir.model.fields,help:account_billing.field_account_billing__narration
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Notes"
-msgstr "Note"
+msgstr "ノート"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__name
 msgid "Number"
-msgstr "Numero"
+msgstr "番号"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_needaction_counter
 msgid "Number of Actions"
-msgstr "Numero di azioni"
+msgstr "アクション数"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__name
 msgid "Number of account.billing"
-msgstr "Numero di account.billing"
+msgstr "合計請求書数"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__message_has_error_counter
 msgid "Number of errors"
-msgstr "Numero di errori"
+msgstr "エラー数"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "Numero di messaggi che richiedono un'azione"
+msgstr "アクションを必要とするメッセージの数"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "Numero di messaggi con errore di consegna"
+msgstr "配信エラーのメッセージ数"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__origin
 msgid "Origin"
-msgstr "Origine"
+msgstr "発生元"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__partner_id
 msgid "Partner"
-msgstr "Partner"
+msgstr "取引先"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__partner_id
 msgid "Partner Information"
-msgstr "Informazioni partner"
+msgstr "取引先情報"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__payment_paid_all
 msgid "Payment Paid All"
-msgstr "Pagamenti completi"
+msgstr "全額支払済"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__payment_state
 msgid "Payment Status"
-msgstr "Stato pagamento"
+msgstr "支払状態"
 
 #. module: account_billing
 #. odoo-python
 #: code:addons/account_billing/models/account_move.py:0
 #, python-format
 msgid "Please select invoices with same currency"
-msgstr "Selezionare fatture con la stessa valuta"
+msgstr "同じ通貨の請求書を選択してください"
 
 #. module: account_billing
 #. odoo-python
 #: code:addons/account_billing/models/account_move.py:0
 #, python-format
 msgid "Please select invoices with same partner"
-msgstr "Selezionare fatture con lo stesso partner"
+msgstr "同じ取引先の請求書を選択してください"
 
 #. module: account_billing
 #: model:ir.actions.server,name:account_billing.action_account_billing_from_list
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Register Payment"
-msgstr "Registra pagamento"
+msgstr "支払登録"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_bank_statement_line__billing_ids
 #: model:ir.model.fields,help:account_billing.field_account_move__billing_ids
 #: model:ir.model.fields,help:account_billing.field_account_payment__billing_ids
 msgid "Relationship between invoice and billing"
-msgstr "Relazione tra fattura e fatturazione"
+msgstr "顧客請求書と仕入先請求書の関係"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Search Billings"
-msgstr "Cerca fatturazioni"
+msgstr "合計請求書検索"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Set to Draft"
-msgstr "Imposta a bozza"
+msgstr "ドラフトに設定"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__state
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__state
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Status"
-msgstr "Stato"
+msgstr "状態"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing_line__origin
 msgid "The document(s) that generated the invoice."
-msgstr "Documento(i) che ha generato la fattura."
+msgstr "顧客請求書を生成したドキュメント"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__threshold_date
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Threshold Date"
-msgstr "Data soglia"
+msgstr "閾日"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__threshold_date_type
 msgid "Threshold Date Type"
-msgstr "Tipo soglia data"
+msgstr "閾日タイプ"
 
 #. module: account_billing
 #. odoo-python
 #: code:addons/account_billing/models/account_billing.py:0
 #, python-format
 msgid "Threshold Date cannot be later than the %s in lines"
-msgstr "La data soglia non può essere dopo il %s nelle righe"
+msgstr "閾日は、明細行の %s より後にすることはできません。"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__amount_total
 msgid "Total"
-msgstr "Totale"
+msgstr "合計"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Total Amount"
-msgstr "Importo totale"
+msgstr "合計金額"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Total Amount Residual"
-msgstr "Valore totale residuo"
+msgstr "残額合計"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__bill_type
 msgid "Type of invoice"
-msgstr "Tipo di fattura"
+msgstr "請求書タイプ"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Validate"
-msgstr "Valida"
+msgstr "検証"
 
 #. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_supplier_billing_tree
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Vendor"
-msgstr "Fornitore"
+msgstr "仕入先"
 
 #. module: account_billing
 #: model:ir.model.fields.selection,name:account_billing.selection__account_billing__bill_type__in_invoice
 msgid "Vendor Bill"
-msgstr "Fattura fornitore"
+msgstr "仕入先請求書"
 
 #. module: account_billing
 #: model:ir.model.fields,field_description:account_billing.field_account_billing__website_message_ids
 msgid "Website Messages"
-msgstr "Messaggi sito web"
+msgstr "ウェブサイトメッセージ"
 
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__website_message_ids
 msgid "Website communication history"
-msgstr "Cronologia comunicazioni sito web"
+msgstr "ウェブサイト通信履歴"
 
 #. module: account_billing
 #. odoo-python
 #: code:addons/account_billing/models/account_billing.py:0
 #, python-format
 msgid "You need to add a line before validate."
-msgstr "Bisogna inserire una riga prima di validare."
+msgstr "検証の前に行を追加する必要があります。"
