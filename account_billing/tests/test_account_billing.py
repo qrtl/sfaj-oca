@@ -37,6 +37,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=100,
             currency_id=cls.currency_eur_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -46,6 +47,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=200,
             currency_id=cls.currency_eur_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -55,6 +57,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=300,
             currency_id=cls.currency_usd_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -64,6 +67,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=400,
             currency_id=cls.currency_eur_id,
             partner_id=cls.partner_china_exp.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -73,6 +77,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=500,
             currency_id=cls.currency_usd_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -82,6 +87,7 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             invoice_amount=500,
             currency_id=cls.currency_usd_id,
             partner_id=cls.partner_a.id,
+            date_invoice=fields.Date.context_today(cls.env.user),
             payment_term_id=cls.payment_term.id,
             auto_validate=True,
         )
@@ -124,6 +130,8 @@ class TestAccountBilling(AccountTestInvoicingCommon):
         action = invoices.action_create_billing()
         customer_billing1 = self.billing_model.browse(action["res_id"])
         self.assertEqual(customer_billing1.state, "draft")
+        # In case other modules change the default value of threshold_date_type
+        customer_billing1.threshold_date_type = "invoice_date_due"
         # Threshold Date error
         with self.assertRaises(ValidationError):
             customer_billing1.validate_billing()
@@ -162,7 +170,8 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             bill1.validate_billing()
 
         bill1.compute_lines()
-
+        # In case _compute_billing_ids is not triggered again after compute_lines.
+        bill1.billing_line_ids.mapped("move_id")._compute_billing_ids()
         self.assertEqual(bill1.invoice_related_count, 2)
         self.assertEqual(bill1.billing_line_ids.mapped("move_id.billing_ids"), bill1)
 
