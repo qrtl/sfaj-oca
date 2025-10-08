@@ -26,6 +26,7 @@ class AccountMove(models.Model):
             {
                 "partner_id": partner.id,
                 "bill_type": list(set(self.mapped("move_type")))[0],
+                "currency_id": self.mapped("currency_id")[0].id,
                 "billing_line_ids": [
                     Command.create(
                         {

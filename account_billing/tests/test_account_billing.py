@@ -227,3 +227,21 @@ class TestAccountBilling(AccountTestInvoicingCommon):
             [("id", "=", billing_other.id)]
         )
         self.assertTrue(billing_with_sudo, "Sudo should bypass company record rule")
+
+    def test_account_billing_currency(self):
+        inv_1 = self._create_invoice(
+            move_type="in_invoice",
+            invoice_amount=100,
+            currency_id=self.currency_eur_id,
+            partner_id=self.partner_a.id,
+            payment_term_id=self.payment_term.id,
+            auto_validate=True,
+        )
+        inv_2 = inv_1.copy()
+        inv_2.invoice_date = fields.Date.today()
+        inv_2.action_post()
+        invoices = inv_1 + inv_2
+        action = invoices.action_create_billing()
+        customer_billing = self.billing_model.browse(action["res_id"])
+        self.assertEqual(customer_billing.currency_id.id, self.currency_eur_id)
+        self.assertEqual(self.env.company.currency_id.id, self.currency_usd_id)
