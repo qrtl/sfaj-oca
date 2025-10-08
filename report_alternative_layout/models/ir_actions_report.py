@@ -16,25 +16,41 @@ class Report(models.Model):
         "Show Remit-to Bank",
         help="If selected, remit-to bank account will show in the report output.",
     )
-    show_document_number = fields.Boolean()
+    show_document_number = fields.Boolean(
+        "Show Document Number in Header",
+        help="If selected, the document number will show in the report header.",
+    )
     date_field_id = fields.Many2one(
         "ir.model.fields",
         domain="[('model','=', model), ('ttype', 'in', ('date', 'datetime'))]",
+        string="Date Field to Show in Header",
+        help="If set, the report will show the value of this field in the header as "
+        "the date of the document.",
+    )
+    date_field_label = fields.Char(
+        translate=True,
+        help="Label for the date field in the report header. If not set, the field's "
+        "description will be used.",
+    )
+    apply_alternative_layout = fields.Boolean(
+        related="paperformat_id.apply_alternative_layout"
     )
 
     def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
         report = self._get_report(report_ref)
-        if report.paperformat_id.apply_alternative_layout:
-            self = self.with_context(apply_alternative_layout=True)
-        if report.paperformat_id.show_address_in_header:
-            self = self.with_context(show_address_in_header=True)
+        self = self.with_context(
+            apply_alternative_layout=report.paperformat_id.apply_alternative_layout,
+            show_address_in_header=report.paperformat_id.show_address_in_header,
+        )
         return super()._render_qweb_pdf(report_ref, res_ids, data)
 
-    def _get_partner(self, partner):
+    def _get_report_partner(self, record):
         self.ensure_one()
-        if self.show_commercial_partner:
-            return partner.commercial_partner_id
-        return partner
+        if hasattr(record, "partner_id"):
+            if self.show_commercial_partner:
+                return record.partner_id.commercial_partner_id
+            return record.partner_id
+        return self.env.user.partner_id
 
     @api.model
     def _get_bank_field_name(self, record):
@@ -67,10 +83,18 @@ class Report(models.Model):
             return False
         return company.bank_ids[:1]
 
-    def _get_date_field_value(self, record):
-        try:
-            if self.date_field_id:
-                value = record[self.date_field_id.name]
-                return format_date(self.env, value)
-        except Exception:
+    def _get_date_value(self, record):
+        self.ensure_one()
+        if not self.date_field_id:
             return None
+        value = record[self.date_field_id.name]
+        if not value:
+            return None
+        try:
+            return format_date(self.env, value)
+        except (TypeError, ValueError):
+            return None
+
+    def _get_date_field_label(self):
+        self.ensure_one()
+        return self.date_field_label or self.date_field_id.field_description or ""
