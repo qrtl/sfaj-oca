@@ -46,7 +46,7 @@ class SaleOrder(models.Model):
                 pricelist_global_cummulative_quantity=qty_data
             )
             global_rule = self.env["product.pricelist.item"]
-            for line in sale.order_line:
+            for line in sale.order_line.filtered("product_id"):
                 suitable_rule = pricelist._get_product_rule(
                     line.product_id,
                     quantity=line.product_uom_qty or 1.0,
