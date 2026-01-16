@@ -30,6 +30,7 @@ class AccountMove(models.Model):
         billing = self.env["account.billing"].create(
             {
                 "partner_id": partner.id,
+                "currency_id": self.mapped("currency_id")[0].id,
                 "bill_type": self._get_billing_type(),
                 "billing_line_ids": [
                     Command.create(
