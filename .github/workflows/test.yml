@@ -36,17 +36,25 @@ jobs:
       matrix:
         include:
           - container: ghcr.io/oca/oca-ci/py3.10-ocb16.0:latest
+            include: "auditlog"
+            name: test with OCB
+            makepot: "false"
+          - container: ghcr.io/oca/oca-ci/py3.10-ocb16.0:latest
+            exclude: "auditlog"
             name: test with OCB
             makepot: "false"
     services:
       postgres:
-        image: postgres:12.0
+        image: postgres:12
         env:
           POSTGRES_USER: odoo
           POSTGRES_PASSWORD: odoo
           POSTGRES_DB: odoo
         ports:
           - 5432:5432
+    env:
+      INCLUDE: "${{ matrix.include }}"
+      EXCLUDE: "${{ matrix.exclude }}"
     steps:
       - uses: actions/checkout@v4
         with:
