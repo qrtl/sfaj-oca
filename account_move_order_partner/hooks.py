@@ -5,7 +5,7 @@ from odoo.tools.sql import column_exists
 
 
 def pre_init_hook(cr):
-    if not column_exists(cr, "account_move", "partner_sale_id"):
+    if not column_exists(cr, "account_move", "order_partner_id"):
         cr.execute(
             """
             ALTER TABLE account_move
