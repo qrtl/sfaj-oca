@@ -15,6 +15,7 @@ class TestPartnerBankSelection(TransactionCase):
                 "acc_number": "99990000",
                 "partner_id": cls.company.partner_id.id,
                 "company_id": cls.company.id,
+                "allow_out_payment": True,
             }
         )
         cls.crm_team_bank = cls.env["res.partner.bank"].create(
@@ -22,6 +23,7 @@ class TestPartnerBankSelection(TransactionCase):
                 "acc_number": "11122233",
                 "partner_id": cls.company.partner_id.id,
                 "company_id": cls.company.id,
+                "allow_out_payment": True,
             }
         )
         cls.sales_team = cls.env["crm.team"].create(
