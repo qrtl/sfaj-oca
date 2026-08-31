@@ -145,7 +145,6 @@
                             class="oe_stat_button"
                             name="invoice_relate_billing_tree_view"
                             type="object"
-                            attrs="{'invisible':[('state', 'not in', ['billed'])]}"
                             icon="fa-pencil-square-o"
                         >
                             <field
@@ -194,6 +193,7 @@
                             />
                             <field name="billing_line_ids">
                                 <tree name="billing" create="0" editable="bottom">
+                                    <field name="sequence" widget="handle" />
                                     <field name="move_id" invisible="1" />
                                     <field name="name" />
                                     <field name="invoice_date" />
