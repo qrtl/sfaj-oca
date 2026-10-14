@@ -33,6 +33,12 @@ class TestSummaryInvoice(TransactionCase):
                 "property_account_receivable_id": account_receivable.id,
             }
         )
+        cls.child_partner = cls.env["res.partner"].create(
+            {
+                "name": "Test Child Partner",
+                "parent_id": cls.partner.id,
+            }
+        )
         cls.bank_account = cls.env["res.partner.bank"].create(
             {
                 "partner_id": cls.env.company.partner_id.id,
@@ -60,7 +66,13 @@ class TestSummaryInvoice(TransactionCase):
         )
 
     def _create_invoice(
-        self, amount, tax, move_type="out_invoice", bank=None, currency_id=None
+        self,
+        amount,
+        tax,
+        move_type="out_invoice",
+        bank=None,
+        partner=None,
+        currency_id=None,
     ):
         invoice = (
             self.env["account.move"]
@@ -68,7 +80,7 @@ class TestSummaryInvoice(TransactionCase):
             .create(
                 {
                     "move_type": move_type,
-                    "partner_id": self.partner.id,
+                    "partner_id": (partner or self.partner).id,
                     "currency_id": currency_id or self.company.currency_id.id,
                     "partner_bank_id": bank and bank.id,
                     "invoice_line_ids": [
@@ -199,6 +211,17 @@ class TestSummaryInvoice(TransactionCase):
         self.assertEqual(abs(billing_tax_amount), 20)
         self.assertFalse(billing.tax_adjustment_entry_id)
 
+    def test_create_tax_adjustment_entry_child_partner(self):
+        inv_1 = self._create_invoice(102, self.tax_10, partner=self.child_partner)
+        inv_2 = self._create_invoice(102, self.tax_10, partner=self.child_partner)
+        inv_3 = self._create_invoice(102, self.tax_10, partner=self.child_partner)
+        invoices = inv_1 + inv_2 + inv_3
+        action = invoices.action_create_billing()
+        billing = self.env["account.billing"].browse(action["res_id"])
+        self.assertEqual(billing.partner_id, self.child_partner)
+        billing.with_company(self.company).validate_billing()
+        self.assertTrue(billing.tax_adjustment_entry_id)
+
     def test_check_tax_adjustment_entry_with_different_currency(self):
         self.assertEqual(self.env.company.currency_id, self.env.ref("base.JPY"))
         currency_usd = self.env.ref("base.USD")
@@ -215,3 +238,15 @@ class TestSummaryInvoice(TransactionCase):
         billing_tax_amount = self._get_billing_tax_amount(billing)
         self.assertEqual(abs(billing_tax_amount), 30)
         self.assertFalse(billing.tax_adjustment_entry_id)
+
+    def test_is_not_for_billing(self):
+        self.partner.is_not_for_billing = True
+        invoice = self._create_invoice(50, self.tax_10)
+        self.assertTrue(invoice.is_not_for_billing)
+        partner_2 = self.env["res.partner"].create({"name": "Test Partner 2"})
+        invoice.partner_id = partner_2
+        self.assertFalse(invoice.is_not_for_billing)
+        partner_2.is_not_for_billing = True
+        self.assertFalse(invoice.is_not_for_billing)
+        invoice.partner_id = self.partner
+        self.assertTrue(invoice.is_not_for_billing)
