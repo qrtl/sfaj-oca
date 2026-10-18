@@ -321,6 +321,30 @@ class TestAuditlogFull(AuditLogRuleCommon, AuditlogCommon):
         self.groups_rule.unlink()
         super(TestAuditlogFull, self).tearDown()
 
+    def test_update_logs_have_lines_with_changes(self):
+        self.groups_rule.subscribe()
+        initial_value = "test-group-1"
+        new_value = "test-group-2"
+        group = self.env["res.groups"].create({"name": initial_value})
+        group.write(
+            {
+                "name": new_value,
+            }
+        )
+        log = self.env["auditlog.log"].search(
+            [
+                ("model_id", "=", self.groups_model_id),
+                ("method", "=", "write"),
+                ("res_id", "=", group.id),
+            ]
+        )
+        self.assertEqual(len(log), 1)
+        self.assertEqual(len(log.line_ids), 1)
+        log_line = log.line_ids[0]
+        self.assertEqual(log_line.field_name, "name")
+        self.assertEqual(log_line.old_value, initial_value)
+        self.assertEqual(log_line.new_value, new_value)
+
 
 class TestAuditlogFast(AuditLogRuleCommon, AuditlogCommon):
     def setUp(self):
@@ -341,6 +365,64 @@ class TestAuditlogFast(AuditLogRuleCommon, AuditlogCommon):
     def tearDown(self):
         self.groups_rule.unlink()
         super(TestAuditlogFast, self).tearDown()
+
+
+class TestAuditlogFastWriteEmptyValue(AuditLogRuleCommon):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.test_model = cls.env["ir.model"].search([("model", "=", "res.partner")])
+        cls.auditlog_rule = cls.create_rule(
+            {
+                "name": "test.model_res_partner",
+                "model_id": cls.test_model.id,
+                "log_type": "fast",
+                "log_read": False,
+                "log_create": False,
+                "log_write": True,
+                "log_unlink": False,
+            }
+        )
+        cls.test_record = (
+            cls.env["res.partner"]
+            .with_context(tracking_disable=True)
+            .create(
+                {
+                    "name": "testpartner3",
+                    "phone": "123",
+                }
+            )
+        )
+
+    def setUp(self):
+        super().setUp()
+        self.auditlog_rule.subscribe()
+
+    def assert_has_one_log_line_with_empty_values(self):
+        logs = self.env["auditlog.log"].search(
+            [
+                ("res_id", "=", self.test_record.id),
+                ("model_id", "=", self.test_model.id),
+            ]
+        )
+        self.assertEqual(len(logs), 1)
+        self.assertEqual(logs[0].model_name, "Contact")
+        self.assertEqual(logs[0].model_model, "res.partner")
+        log_lines = logs.mapped("line_ids")
+        self.assertEqual(len(log_lines), 1)
+        self.assertEqual(log_lines[0].field_name, "phone")
+        self.assertFalse(log_lines[0].old_value)
+        self.assertFalse(log_lines[0].old_value_text)
+        self.assertFalse(log_lines[0].new_value)
+        self.assertFalse(log_lines[0].new_value_text)
+
+    def test_when_removing_field_value_a_log_line_is_created(self):
+        self.test_record.write({"phone": False})
+        self.assert_has_one_log_line_with_empty_values()
+
+    def test_when_using_none_field_value_a_log_line_is_created(self):
+        self.test_record.write({"phone": None})
+        self.assert_has_one_log_line_with_empty_values()
 
 
 class TestFieldRemoval(AuditLogRuleCommon):
@@ -386,13 +468,15 @@ class TestFieldRemoval(AuditLogRuleCommon):
             }
         )
 
-        cls.auditlog_rule.subscribe()
+    def setUp(self):
+        super().setUp()
+        self.auditlog_rule.subscribe()
         # Trigger log creation
-        rec = cls.env["x_test.model"].create({"x_test_field": "test value"})
+        rec = self.env["x_test.model"].create({"x_test_field": "test value"})
         rec.write({"x_test_field": "test value 2"})
 
-        cls.logs = cls.env["auditlog.log"].search(
-            [("res_id", "=", rec.id), ("model_id", "=", cls.test_model.id)]
+        self.logs = self.env["auditlog.log"].search(
+            [("res_id", "=", rec.id), ("model_id", "=", self.test_model.id)]
         )
 
     def assert_values(self):
@@ -513,14 +597,16 @@ class AuditLogRuleTestForUserFields(AuditLogRuleCommon):
         # Updating users_to_exclude_ids
         cls.auditlog_rule.users_to_exclude_ids = [[4, cls.users_to_exclude_ids]]
 
-        # Subscribe auditlog.rule
-        cls.auditlog_rule.subscribe()
-
         cls.auditlog_log = cls.env["auditlog.log"]
 
+    def setUp(self):
+        super().setUp()
+        # Subscribe auditlog.rule
+        self.auditlog_rule.subscribe()
+
         # Creating new res.partner
-        cls.testpartner1 = (
-            cls.env["res.partner"]
+        self.testpartner1 = (
+            self.env["res.partner"]
             .with_context(tracking_disable=True)
             .create(
                 {
@@ -531,10 +617,10 @@ class AuditLogRuleTestForUserFields(AuditLogRuleCommon):
         )
 
         # Creating new res.partner from excluded user
-        cls.testpartner2 = (
-            cls.env["res.partner"]
+        self.testpartner2 = (
+            self.env["res.partner"]
             .with_context(tracking_disable=True)
-            .with_user(cls.user.id)
+            .with_user(self.user.id)
             .create(
                 {
                     "name": "testpartner2",
@@ -661,9 +747,6 @@ class AuditLogRuleTestForUserModel(AuditLogRuleCommon):
             }
         )
 
-        # Subscribe auditlog.rule
-        cls.auditlog_rule.subscribe()
-
         # Create user id
         cls.user = (
             cls.env["res.users"]
@@ -678,6 +761,11 @@ class AuditLogRuleTestForUserModel(AuditLogRuleCommon):
         cls.group = cls.env.ref("auditlog.group_auditlog_manager")
 
         cls.auditlog_log = cls.env["auditlog.log"]
+
+    def setUp(self):
+        super().setUp()
+        # Subscribe auditlog.rule
+        self.auditlog_rule.subscribe()
 
     def test_01_AuditlogFull_field_group_write_log(self):
         """Change group and check successfully created log"""
@@ -737,14 +825,16 @@ class AuditLogRuleTestPartnerCompanyDependentFields(AuditLogRuleCommon):
             }
         )
 
-        # Subscribe auditlog.rule
-        cls.auditlog_rule.subscribe()
-
         cls.auditlog_log = cls.env["auditlog.log"]
 
+    def setUp(self):
+        super().setUp()
+        # Subscribe auditlog.rule
+        self.auditlog_rule.subscribe()
+
         # Creating new res.partner
-        cls.testpartner = (
-            cls.env["res.partner"]
+        self.testpartner = (
+            self.env["res.partner"]
             .with_context(tracking_disable=True)
             .create(
                 {
