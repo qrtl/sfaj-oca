@@ -27,12 +27,6 @@ html .o_web_client .o_action_manager .o_action {
         .fc-timeGridWeek-view .fc-axis {
             padding-left: 0px;
         }
-        .fc-dayGridMonth-view {
-            padding-left: 0px;
-            .fc-week-number {
-                display: none;
-            }
-        }
         .fc-dayGridYear-view {
             padding-left: 0px;
             > .fc-month-container {
@@ -158,7 +152,6 @@ html .o_web_client .o_action_manager .o_action {
         // Support for long title (with ellipsis)
         .oe_title {
             .o_field_widget:not(.oe_inline) {
-                display: block;
                 span:not(.o_field_translate):not(.o_status) {
                     display: block;
                     max-width: 100%;
