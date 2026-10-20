@@ -1,10 +1,12 @@
 # © 2016 Julien Coux (Camptocamp)
 # © 2018 Forest and Biomass Romania SA
 # Copyright 2020 ForgeFlow S.L. (https://www.forgeflow.com)
+# Copyright 2025 Simone Rubino - PyTech
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 
-from odoo import _, api, models
+from odoo import _, api, exceptions, models
+from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_is_zero
 
 
@@ -361,32 +363,71 @@ class TrialBalanceReport(models.AbstractModel):
                 total_amount, tb, acc_id, prt_id, foreign_currency
             )
         # sort on partner_name
+        # total_amount is a dictionary by account id that contains direct totalized
+        # values for that account (credit, debit, balance...), but also other integer
+        # keys that represents partner ids with the detail of each of them, and one
+        # of the partner id keys is 0 for those with no partner
         for acc_id, total_data in total_amount.items():
             tmp_list = sorted(
                 total_data.items(),
-                key=lambda x: isinstance(x[0], int)
-                and isinstance(x[1], dict)
-                and x[1]["partner_name"]
-                or x[0],
+                key=lambda x: ("\xff" if not x[0] else x[1]["partner_name"])
+                if isinstance(x[0], int)
+                else "!",  # ~ is the last ASCII printable char, and ! the first
             )
             total_amount[acc_id] = {}
             for key, value in tmp_list:
                 total_amount[acc_id][key] = value
         return total_amount, partners_data
 
-    def _remove_accounts_at_cero(self, total_amount, show_partner_details, company):
-        def is_removable(d):
-            rounding = company.currency_id.rounding
-            return (
-                float_is_zero(d["initial_balance"], precision_rounding=rounding)
-                and float_is_zero(d["credit"], precision_rounding=rounding)
-                and float_is_zero(d["debit"], precision_rounding=rounding)
-                and float_is_zero(d["ending_balance"], precision_rounding=rounding)
-            )
+    def _is_removable(self, company, total_account_data, amounts_at_0):
+        """Return True when all keys in `amounts_at_0` have value 0 in `total_account_data`.
 
+        The precision of `company`'s currency is used to check the values.
+        """
+        rounding = company.currency_id.rounding
+        is_to_remove = False
+        for amount_at_0 in amounts_at_0:
+            if not float_is_zero(
+                total_account_data[amount_at_0],
+                precision_rounding=rounding,
+            ):
+                is_to_remove = False
+                break
+        else:
+            # All amounts are 0
+            is_to_remove = True
+        return is_to_remove
+
+    def _get_amounts_at_0_to_remove_account_data(self, mode):
+        """Return the amounts that must be checked for removing account lines."""
+        mode_to_amounts_at_0 = {
+            "all": [
+                "initial_balance",
+                "credit",
+                "debit",
+                "ending_balance",
+            ],
+            "end": [
+                "ending_balance",
+            ],
+        }
+        amounts_at_0 = mode_to_amounts_at_0.get(mode, [])
+        if not amounts_at_0:
+            raise exceptions.UserError(
+                _(
+                    "Mode %(mode)s for removing account lines at 0 not supported",
+                    mode=mode,
+                )
+            )
+        return amounts_at_0
+
+    def _remove_accounts_at_cero(
+        self, total_amount, show_partner_details, company, mode="all"
+    ):
+        amounts_at_0 = self._get_amounts_at_0_to_remove_account_data(mode=mode)
         accounts_to_remove = []
         for acc_id, ta_data in total_amount.items():
-            if is_removable(ta_data):
+            if self._is_removable(company, ta_data, amounts_at_0):
                 accounts_to_remove.append(acc_id)
             elif show_partner_details:
                 partner_to_remove = []
@@ -394,7 +435,9 @@ class TrialBalanceReport(models.AbstractModel):
                     # If the show_partner_details option is checked,
                     # the partner data is in the same account data dict
                     # but with the partner id as the key
-                    if isinstance(key, int) and is_removable(value):
+                    if isinstance(key, int) and self._is_removable(
+                        company, value, amounts_at_0
+                    ):
                         partner_to_remove.append(key)
                 for partner_id in partner_to_remove:
                     del ta_data[partner_id]
@@ -415,6 +458,7 @@ class TrialBalanceReport(models.AbstractModel):
         only_posted_moves,
         show_partner_details,
         hide_account_at_0,
+        hide_account_at_end_0,
         unaffected_earnings_account,
         fy_start_date,
         grouped_by,
@@ -548,6 +592,12 @@ class TrialBalanceReport(models.AbstractModel):
                 total_amount, tb_initial_prt, tb_period_prt, foreign_currency
             )
         # Remove accounts a 0 from collections
+        if hide_account_at_end_0:
+            company = self.env["res.company"].browse(company_id)
+            self._remove_accounts_at_cero(
+                total_amount, show_partner_details, company, mode="end"
+            )
+
         if hide_account_at_0:
             company = self.env["res.company"].browse(company_id)
             self._remove_accounts_at_cero(total_amount, show_partner_details, company)
@@ -687,8 +737,26 @@ class TrialBalanceReport(models.AbstractModel):
         return trial_balance, total_amount_grouped
 
     def _get_hierarchy_groups(self, group_ids, groups_data, foreign_currency):
-        for group_id in group_ids:
+        processed_groups = []
+        # Sort groups so that parent groups are processed before child groups
+        groups = (
+            self.env["account.group"]
+            .browse(group_ids)
+            .sorted(key=lambda x: x.complete_code)
+        )
+        for group in groups:
+            group_id = group.id
             parent_id = groups_data[group_id]["parent_id"]
+            if group_id in processed_groups:
+                raise UserError(
+                    _(
+                        "There is a problem in the structure of the account groups. "
+                        "You may need to create some child group of %s."
+                    )
+                    % groups_data[group_id]["name"]
+                )
+            else:
+                processed_groups.append(parent_id)
             while parent_id:
                 if parent_id not in groups_data.keys():
                     group = self.env["account.group"].browse(parent_id)
@@ -842,6 +910,7 @@ class TrialBalanceReport(models.AbstractModel):
         return groups_data
 
     def _get_report_values(self, docids, data):
+        res = super()._get_report_values(docids, data)
         show_partner_details = data["show_partner_details"]
         wizard_id = data["wizard_id"]
         company = self.env["res.company"].browse(data["company_id"])
@@ -852,6 +921,7 @@ class TrialBalanceReport(models.AbstractModel):
         date_to = data["date_to"]
         date_from = data["date_from"]
         hide_account_at_0 = data["hide_account_at_0"]
+        hide_account_at_end_0 = data["hide_account_at_end_0"]
         show_hierarchy = data["show_hierarchy"]
         show_hierarchy_level = data["show_hierarchy_level"]
         foreign_currency = data["foreign_currency"]
@@ -870,6 +940,7 @@ class TrialBalanceReport(models.AbstractModel):
             only_posted_moves,
             show_partner_details,
             hide_account_at_0,
+            hide_account_at_end_0,
             unaffected_earnings_account,
             fy_start_date,
             grouped_by,
@@ -936,29 +1007,33 @@ class TrialBalanceReport(models.AbstractModel):
                     total_amount[account_id]["currency_name"] = accounts_data[
                         account_id
                     ]["currency_name"]
-        return {
-            "doc_ids": [wizard_id],
-            "doc_model": "trial.balance.report.wizard",
-            "docs": self.env["trial.balance.report.wizard"].browse(wizard_id),
-            "foreign_currency": data["foreign_currency"],
-            "company_name": company.display_name,
-            "company_currency": company.currency_id,
-            "currency_name": company.currency_id.name,
-            "date_from": data["date_from"],
-            "date_to": data["date_to"],
-            "only_posted_moves": data["only_posted_moves"],
-            "hide_account_at_0": data["hide_account_at_0"],
-            "show_partner_details": data["show_partner_details"],
-            "limit_hierarchy_level": data["limit_hierarchy_level"],
-            "show_hierarchy": show_hierarchy,
-            "hide_parent_hierarchy_level": data["hide_parent_hierarchy_level"],
-            "trial_balance": trial_balance,
-            "trial_balance_grouped": trial_balance_grouped,
-            "total_amount": total_amount,
-            "total_amount_grouped": total_amount_grouped,
-            "accounts_data": accounts_data,
-            "partners_data": partners_data,
-            "show_hierarchy_level": show_hierarchy_level,
-            "currency_model": self.env["res.currency"],
-            "grouped_by": grouped_by,
-        }
+        res.update(
+            {
+                "doc_ids": [wizard_id],
+                "doc_model": "trial.balance.report.wizard",
+                "docs": self.env["trial.balance.report.wizard"].browse(wizard_id),
+                "foreign_currency": data["foreign_currency"],
+                "company_name": company.display_name,
+                "company_currency": company.currency_id,
+                "currency_name": company.currency_id.name,
+                "date_from": data["date_from"],
+                "date_to": data["date_to"],
+                "only_posted_moves": data["only_posted_moves"],
+                "hide_account_at_0": data["hide_account_at_0"],
+                "hide_account_at_end_0": data["hide_account_at_end_0"],
+                "show_partner_details": data["show_partner_details"],
+                "limit_hierarchy_level": data["limit_hierarchy_level"],
+                "show_hierarchy": show_hierarchy,
+                "hide_parent_hierarchy_level": data["hide_parent_hierarchy_level"],
+                "trial_balance": trial_balance,
+                "trial_balance_grouped": trial_balance_grouped,
+                "total_amount": total_amount,
+                "total_amount_grouped": total_amount_grouped,
+                "accounts_data": accounts_data,
+                "partners_data": partners_data,
+                "show_hierarchy_level": show_hierarchy_level,
+                "currency_model": self.env["res.currency"],
+                "grouped_by": grouped_by,
+            }
+        )
+        return res

@@ -8,6 +8,9 @@ Invoicing / Reporting / OCA accounting reports.
 - VAT Report
 - Journal Ledger
 
+It is possible to select the columns to show and limit the size of some of them from the
+columns page.
+
 Currently General ledger, Trial Balance and Open Items are fully compatible with a foreign
 currency set up in account in order to display balances. Moreover, any foreign
 currency used in account move lines is properly shown.
@@ -18,3 +21,7 @@ currency balances are not available.
 Invoicing / Settings / Invoicing / OCA Aged Report Configuration you will be able to set
 dynamic intervals that will appear on the Aged Partner Balance.
 For further information, check CONFIGURE.rst
+
+In the Trial Balance, the flag *Hide accounts with 0 end balance*
+allows the user to hide accounts that
+have ending balance equal to 0 in the selected period.
