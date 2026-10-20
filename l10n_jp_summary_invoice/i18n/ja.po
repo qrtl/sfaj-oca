@@ -31,6 +31,9 @@ msgid ""
 "specific.\" aria-label=\"Values set here are company-specific.\" "
 "groups=\"base.group_multi_company\" role=\"img\"/>"
 msgstr ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" aria-label=\"Values set here are company-specific.\" "
+"groups=\"base.group_multi_company\" role=\"img\"/>"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.bill_line_section_layout
@@ -84,7 +87,7 @@ msgstr "金額"
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.view_partner_property_form
 msgid "Billing"
-msgstr ""
+msgstr "合計請求書"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__tax_totals
@@ -109,7 +112,7 @@ msgstr "コンフィグ設定"
 #. module: l10n_jp_summary_invoice
 #: model:ir.model,name:l10n_jp_summary_invoice.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "連絡先"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,help:l10n_jp_summary_invoice.field_res_company__summary_invoice_remark
@@ -143,7 +146,7 @@ msgstr "例: 下記の通りご請求申し上げます。"
 msgid ""
 "If enabled, invoices for this partner will be excluded from the billing "
 "process by default."
-msgstr ""
+msgstr "選択した場合、この取引先の請求書はデフォルトで合計請求書への追加対象外となります。"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,help:l10n_jp_summary_invoice.field_res_company__show_invoice_narration
@@ -214,7 +217,7 @@ msgstr "仕訳"
 #. module: l10n_jp_summary_invoice
 #: model:ir.model,name:l10n_jp_summary_invoice.model_account_move_line
 msgid "Journal Item"
-msgstr ""
+msgstr "仕訳明細"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.bill_line_section_layout
@@ -279,7 +282,7 @@ msgstr "合計請求書明細行に販売オーダ番号を表示"
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_move_line__signed_quantity
 msgid "Signed Quantity"
-msgstr ""
+msgstr "符号付数量"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.res_config_settings_view_form
@@ -332,7 +335,7 @@ msgstr "消費税"
 #: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_move_line__signed_quantity
 msgid ""
 "Technical field used to display the value with the correct sign in reports."
-msgstr ""
+msgstr "レポートで正しい符号の値を表示するための技術フィールド。"
 
 #. module: l10n_jp_summary_invoice
 #. odoo-python
